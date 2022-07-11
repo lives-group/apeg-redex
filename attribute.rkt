@@ -12,20 +12,48 @@
         (- expr expr)
         x)
   (x variable-not-otherwise-mentioned)
-  (value natural))
+  (value natural)
+  (ctx ((x value)...)))
+
+(define-judgment-form AttributeL
+  #:mode (eval I I O)
+  #:contract (eval ctx expr value)
+  
+  [-------------------------------- 
+   (eval ctx number number)]
+
+  [
+   -------------------------------- 
+   (eval ((x value)) x value)]
+
+  [(eval ctx expr_1 value_1)
+   (eval ctx expr_2 value_2)
+   ------------------------------------
+   (eval ctx (+ expr_1 expr_2) ,(+ (term value_1) (term value_2)))]
+
+  [(eval ctx expr_1 value_1)
+   (eval ctx expr_2 value_2)
+   ------------------------------------
+   (eval ctx (* expr_1 expr_2) ,(* (term value_1) (term value_2)))]
+  )
 
 (define-extended-language ctx-AttributeL AttributeL
+  (VS (expr ctx))
   (ctx ((x value)...))
-  (H value 
-     (+ H expr)
+  (P (H ctx))
+  (H (+ H expr)
+     (+ value H)
      (* H expr)
-     (/ H expr)
-     (- H expr))
-  (VS (H ctx)))
+     (* value H)
+     hole)
+  
+  (value number))
 
 (define ctx-red
   (reduction-relation
-   ctx-AttributeL
-    #:domain VS
-    (--> ((+ value expr) ctx) 
-         (value ctx))))
+       ctx-AttributeL
+       #:domain expr
+       (--> (in-hole H (+ value_1 value_2) ) 
+            (in-hole H ,(+ (term value_1) (term value_2)) )
+            "add1")
+   ))
