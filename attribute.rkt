@@ -6,6 +6,7 @@
   (update (attr ...)) 
   (attr (← x expr))
   (expr natural
+        float
         (+ expr expr)
         (* expr expr)
         (/ expr expr)
@@ -35,6 +36,16 @@
    (eval ctx expr_2 value_2)
    ------------------------------------
    (eval ctx (* expr_1 expr_2) ,(* (term value_1) (term value_2)))]
+
+  [(eval ctx expr_1 value_1)
+   (eval ctx expr_2 value_2)
+   ------------------------------------
+   (eval ctx (- expr_1 expr_2) ,(- (term value_1) (term value_2)))]
+
+  [(eval ctx expr_1 value_1)
+   (eval ctx expr_2 value_2)
+   ------------------------------------
+   (eval ctx (/ expr_1 expr_2) ,(/ (term value_1) (term value_2)))]
   )
 
 (define-extended-language ctx-AttributeL AttributeL
@@ -70,5 +81,6 @@
             "var")
    ))
 
-(traces ctx-red (term (+ 1 (+ 1 1))))
-(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
+;(traces ctx-red (term (+ 1 (+ 1 1))))
+;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
+;(judgment-holds (eval ((x 3)) (+ (* x 7) (/ x 3)) value) value)
