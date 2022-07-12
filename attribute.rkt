@@ -57,3 +57,18 @@
             (in-hole H ,(+ (term value_1) (term value_2)) )
             "add1")
    ))
+
+(define expr-red
+  (reduction-relation
+       ctx-AttributeL
+       #:domain VS
+       (--> ((in-hole H   (+  number_1        number_2)       ) ctx) 
+            ((in-hole H  ,(+ (term number_1) (term number_2)) ) ctx)
+            "add1")
+       (--> ((in-hole H   x)     ( (x_1 value_1)... (x value) (x_2 value_2)... ) )  
+            ((in-hole H  value ) ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
+            "var")
+   ))
+
+(traces ctx-red (term (+ 1 (+ 1 1))))
+(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
