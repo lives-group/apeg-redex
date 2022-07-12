@@ -5,15 +5,15 @@
 (define-language AttributeL
   (update (attr ...)) 
   (attr (← x expr))
-  (expr natural
-        float
+  (expr number
         (+ expr expr)
         (* expr expr)
         (/ expr expr)
         (- expr expr)
         x)
   (x variable-not-otherwise-mentioned)
-  (value natural)
+  (value number
+         undef)
   (ctx ((x value)...)))
 
 (define-judgment-form AttributeL
@@ -25,27 +25,34 @@
 
   [
    -------------------------------- 
-   (eval ((x value)) x value)]
+   (eval ctx x (look x ctx))]
 
-  [(eval ctx expr_1 value_1)
-   (eval ctx expr_2 value_2)
+  [(eval ctx expr_1 number_1)
+   (eval ctx expr_2 number_2)
    ------------------------------------
-   (eval ctx (+ expr_1 expr_2) ,(+ (term value_1) (term value_2)))]
+   (eval ctx (+ expr_1 expr_2) ,(+ (term number_1) (term number_2)))]
 
-  [(eval ctx expr_1 value_1)
-   (eval ctx expr_2 value_2)
+  [(eval ctx expr_1 number_1)
+   (eval ctx expr_2 number_2)
    ------------------------------------
-   (eval ctx (* expr_1 expr_2) ,(* (term value_1) (term value_2)))]
+   (eval ctx (* expr_1 expr_2) ,(* (term number_1) (term number_2)))]
 
-  [(eval ctx expr_1 value_1)
-   (eval ctx expr_2 value_2)
+  [(eval ctx expr_1 number_1)
+   (eval ctx expr_2 number_2)
    ------------------------------------
-   (eval ctx (- expr_1 expr_2) ,(- (term value_1) (term value_2)))]
+   (eval ctx (- expr_1 expr_2) ,(- (term number_1) (term number_2)))]
 
-  [(eval ctx expr_1 value_1)
-   (eval ctx expr_2 value_2)
+  [(eval ctx expr_1 number_1)
+   (eval ctx expr_2 number_2)
    ------------------------------------
-   (eval ctx (/ expr_1 expr_2) ,(/ (term value_1) (term value_2)))]
+   (eval ctx (/ expr_1 expr_2) ,(/ (term number_1) (term number_2)))]
+  )
+
+(define-metafunction AttributeL
+  look : x ((x value) ...) -> value
+  [(look x () ) undef]
+  [(look x ((x value) (x_1 value_1)...) ) value]
+  [(look x ((x_1 value) (x_2 value_1)...) ) (look x ((x_2 value_1) ...)) ]
   )
 
 (define-extended-language ctx-AttributeL AttributeL
@@ -56,31 +63,48 @@
      (+ value H)
      (* H expr)
      (* value H)
+     (- H expr)
+     (- value H)
+     (/ H expr)
+     (/ value H)
      hole)
   
   (value number))
 
 (define ctx-red
   (reduction-relation
-       ctx-AttributeL
-       #:domain expr
-       (--> (in-hole H (+ value_1 value_2) ) 
-            (in-hole H ,(+ (term value_1) (term value_2)) )
-            "add1")
+   ctx-AttributeL
+   #:domain expr
+   (--> (in-hole H (+ value_1 value_2) ) 
+        (in-hole H ,(+ (term value_1) (term value_2)) )
+        "add1")
    ))
 
 (define expr-red
   (reduction-relation
-       ctx-AttributeL
-       #:domain VS
-       (--> ((in-hole H   (+  number_1        number_2)       ) ctx) 
-            ((in-hole H  ,(+ (term number_1) (term number_2)) ) ctx)
-            "add1")
-       (--> ((in-hole H   x)     ( (x_1 value_1)... (x value) (x_2 value_2)... ) )  
-            ((in-hole H  value ) ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
-            "var")
+   ctx-AttributeL
+   #:domain VS
+   (--> ((in-hole H   (+  number_1        number_2)       ) ctx) 
+        ((in-hole H  ,(+ (term number_1) (term number_2)) ) ctx)
+        "add1")
+   (--> ((in-hole H   x)     ( (x_1 value_1)... (x value) (x_2 value_2)... ) )  
+        ((in-hole H  value ) ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
+        "var")
+   (--> ((in-hole H   (*  number_1        number_2)       ) ctx) 
+        ((in-hole H  ,(* (term number_1) (term number_2)) ) ctx)
+        "mult1")
+   (--> ((in-hole H   (-  number_1        number_2)       ) ctx) 
+        ((in-hole H  ,(- (term number_1) (term number_2)) ) ctx)
+        "sub1")
+   (--> ((in-hole H   (/  number_1        number_2)       ) ctx) 
+        ((in-hole H  ,(/ (term number_1) (term number_2)) ) ctx)
+        "div1")
+   
+       
    ))
 
-;(traces ctx-red (term (+ 1 (+ 1 1))))
+;(traces expr-red (term ((* 1 2) () ) ) )
 ;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
 ;(judgment-holds (eval ((x 3)) (+ (* x 7) (/ x 3)) value) value)
+;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* y 3)) value) value)
+;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* t 3)) value) value)
