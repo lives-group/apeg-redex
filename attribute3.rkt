@@ -4,15 +4,16 @@
 ; Syntax
 (define-language AttributeL
   (expr number
+        string
+        (⇒((expr expr) ...) ) ;; (⇒ ((str-cat "a"  "mora")  (+ (- 10 7) 4) )
+        (ac expr expr)         ;; (⇒ ("amora" 7) )
+        (ext expr (expr expr) )
         (+ expr expr)
         (* expr expr)
         (/ expr expr)
         (- expr expr)
         x)
-  (x variable-not-otherwise-mentioned)
-  (value number
-         undef)
-  (ctx ((x value)...)))
+  (x variable-not-otherwise-mentioned))
   
 (define-extended-language ctx-AttributeL AttributeL
   (VS (expr ctx))
@@ -24,9 +25,13 @@
      (- H expr)
      (- value H)
      (/ H expr)
-     (/ value H)
+     (/ value H)     
+     (⇒ ((string value)... (H expr )  (expr expr)... ))
+     (⇒ ((string value)... (string H) (expr expr)... ))
      hole)
   (value number
+         string
+         (⇒ ((string value)... ) )
          undef))
 
 (define-extended-language PegL ctx-AttributeL
@@ -69,7 +74,6 @@
    (--> ((in-hole H   (/  number_1        number_2)       ) ctx) 
         ((in-hole H  ,(/ (term number_1) (term number_2)) ) ctx)
         "div1")
-       
    ))
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
@@ -85,6 +89,8 @@
 #;(traces expr-red (term ((+ (+ X 1) 2) ((X 10)))) )
 #;(traces expr-red (term ((+ (+ 2 4) (+ 1 2)) ()) ))
 
+;(traces expr-red (term (  (⇒ ( ("Nada" (+ 1 2) ) ) )    ((X 10) (Y 20)) )) )
+(traces expr-red (term (  (⇒ ( ("inner" (⇒ (  ("Nada" (+ 1 2) ) ) ))  ("Nada" (+ 1 2) ) ) )    ((X 10) (Y 20)) )) )
 
 ; The so-precious in-hole examaples ! 
 ;
@@ -123,5 +129,5 @@
 
 
 ;(traces apeg-red (term ( ((← A 1)) ((A 234)) ("a" 0 ()) indef) ))
-(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
-(apply-reduction-relation* expr-red (term (  (+ 1 A)  ((A 234)) )  ))
+;(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
+;(apply-reduction-relation* expr-red (term (  (+ 1 A)  ((A 234)) )  ))
