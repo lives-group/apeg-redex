@@ -3,8 +3,6 @@
 
 ; Syntax
 (define-language AttributeL
-  (update (attr ...)) 
-  (attr (← x expr))
   (expr number
         (+ expr expr)
         (* expr expr)
@@ -31,45 +29,24 @@
   (value number
          undef))
 
-
-(define-judgment-form ctx-AttributeL
-  #:mode (eval I I O)
-  #:contract (eval ctx expr value)
-  
-  [-------------------------------- 
-   (eval ctx number number)]
-
-  [
-   -------------------------------- 
-   (eval ctx x (look x ctx))]
-
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
-   ------------------------------------
-   (eval ctx (+ expr_1 expr_2) ,(+ (term number_1) (term number_2)))]
-
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
-   ------------------------------------
-   (eval ctx (* expr_1 expr_2) ,(* (term number_1) (term number_2)))]
-
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
-   ------------------------------------
-   (eval ctx (- expr_1 expr_2) ,(- (term number_1) (term number_2)))]
-
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
-   ------------------------------------
-   (eval ctx (/ expr_1 expr_2) ,(/ (term number_1) (term number_2)))]
+(define-extended-language PegL ctx-AttributeL
+   (APeg  (Update ... )
+          any)
+   (Update (← x expr))
+ 
+   (input (string natural (natural ...)))
+   (r ok
+      fail
+      indef
+      )
+   (st (APeg ctx input r))
   )
 
-(define-metafunction ctx-AttributeL
-    look : x ((x value) ...) -> value
-   [(look x ()) undef]
-   [(look x ((x value) (x_1 value_1)...) ) value]
-   [(look x ((x_1 value) (x_2 value_1)...) ) (look x ((x_2 value_1) ...)) ]
+(define-metafunction PegL
+    len : string -> natural
+   [(len  string) ,(= (string-length (term string) 1))]
   )
+
 
 
 
@@ -101,17 +78,50 @@
 ;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* y 3)) value) value)
 ;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* t 3)) value) value)
 
-(traces expr-red (term ( Z ((X 10) (Y 20)))) )
+#;(traces expr-red (term ( Z ((X 10) (Y 20)))) )
 #;(traces expr-red (term ((+ 1 2) () ) ) )
 #;(traces expr-red (term ((+ 2 (+ 1 2)) ()) )) 
 #;(traces expr-red (term ((+ (+ 1 1) 2) ())) )
-(traces expr-red (term ((+ (+ X 1) 2) ((X 10)))) )
-(traces expr-red (term ((+ (+ 2 4) (+ 1 2)) ()) ))
+#;(traces expr-red (term ((+ (+ X 1) 2) ((X 10)))) )
+#;(traces expr-red (term ((+ (+ 2 4) (+ 1 2)) ()) ))
 
 
 ; The so-precious in-hole examaples ! 
 ;
 #;(redex-match ctx-AttributeL (in-hole H (+ number_1 number_2)) (term (+ 5 (+ 1 (+ 2 3))) ) )
 #;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 1 (+ 2 3)) 5) ) )
-(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 2 4) (+ 1 2)) ) ) 
+#;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 2 4) (+ 1 2)) ) ) 
 
+
+(define apeg-red
+  (reduction-relation
+   PegL
+   #:domain st
+   (--> ( ( (← x value) Update ...) ctx input r) 
+        ( (Update ...) (update_val x value ctx) input r)
+        "update")
+   (--> ( ( (← x expr) Update ...) ctx input r) 
+        ( ( (← x value) Update ...) ctx input r)
+        (where #t (notSingleton expr))
+        (where ((value ctx_1) (value_2 ctx_2)...) ,(apply-reduction-relation* expr-red (term (expr ctx)) ))
+        "eval-expr")       
+   ))
+
+
+(define-metafunction ctx-AttributeL
+    update_val : x value ctx -> ctx 
+   [(update_val x value ()) ((x value))]
+   [(update_val x value ((x value_2) (x_1 value_1)...) ) ((x value) (x_1 value_1)...)]
+   [(update_val x value ((x_1 value_1) (x_2 value_2)...) ) ((x_1 value_1) (look x ((x_2 value_2) ...))) ]
+  )
+
+(define-metafunction PegL
+    notSingleton : expr -> boolean 
+   [(notSingleton value)  #f]
+   [(notSingleton expr)   #t]
+  )
+
+
+;(traces apeg-red (term ( ((← A 1)) ((A 234)) ("a" 0 ()) indef) ))
+(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
+(apply-reduction-relation* expr-red (term (  (+ 1 A)  ((A 234)) )  ))
