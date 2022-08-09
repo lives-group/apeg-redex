@@ -3,52 +3,72 @@
 
 ; Syntax
 (define-language AttributeL
-  (expr number
-        (+ expr expr)
-        (* expr expr)
-        (/ expr expr)
-        (- expr expr)
+  (expr l
+        (⇒ ((expr expr) ...))
+        (get expr expr)
+        (put expr expr expr)
+        (: expr expr) ;; do lista
+        nil           ;; lista empty
+        (head expr)
+        (tail expr)
+        (+  expr expr)
+        (*  expr expr)
+        (/  expr expr)
+        (-  expr expr)
         x)
-  (x variable-not-otherwise-mentioned)
-  (value number
-         undef)
-  (ctx ((x value)...)))
+  (l number
+     string)
+  (x variable-not-otherwise-mentioned))
   
 (define-extended-language ctx-AttributeL AttributeL
   (VS (expr ctx))
   (ctx ((x value)...))
-  (H (+ H expr)
-     (+ value H)
-     (* H expr)
-     (* value H)
-     (- H expr)
-     (- value H)
-     (/ H expr)
-     (/ value H)
+  (H (+  H expr)
+     (+  value H)
+     (*  H expr)
+     (*  value H)
+     (-  H expr)
+     (-  value H)
+     (/  H expr)
+     (/  value H)
+     (get H expr)
+     (get value H)
+     (put H expr expr)
+     (put (⇒ ((string value)...)) H expr)
+     (put (⇒ ((string value)...)) string H)
+     (: H expr)
+     (: value H)
+     (head H)
+     (tail H)
+     (⇒ ((string value)... (H expr)   (expr expr)...))
+     (⇒ ((string value)... (string H) (expr expr)...))
      hole)
   (value number
+         string
+         (⇒ ((string value) ...))
+         (: value value)
+         nil
          undef))
 
+
+;;;;;;;;;;;;;;;;;;
+;; Ainda nao chegamos aqui, ainda
 (define-extended-language PegL ctx-AttributeL
-   (APeg  (Update ... )
-          any)
-   (Update (← x expr))
+  (APeg  (Update ... )
+         any)
+  (Update (← x expr))
  
-   (input (string natural (natural ...)))
-   (r ok
-      fail
-      indef
-      )
-   (st (APeg ctx input r))
-  )
+  (input (string natural (natural ...)))
+  (r ok
+     fail
+     indef)
+  (st (APeg ctx input r)))
 
 (define-metafunction PegL
-    len : string -> natural
-   [(len  string) ,(= (string-length (term string) 1))]
-  )
+  len : string -> natural
+  [(len  string) ,(= (string-length (term string) 1))])
 
-
-
+;;;;;;;;;;;
 
 (define expr-red
   (reduction-relation
@@ -58,7 +78,7 @@
         ((in-hole H  ,(+ (term number_1) (term number_2)) ) ctx)
         "add1")
    (--> ((in-hole H   x)     ( (x_1 value_1)... (x value) (x_2 value_2)... ) )  
-        ((in-hole H  value ) ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
+        ((in-hole H   value ) ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
         "var")
    (--> ((in-hole H   (*  number_1        number_2)       ) ctx) 
         ((in-hole H  ,(* (term number_1) (term number_2)) ) ctx)
@@ -69,8 +89,12 @@
    (--> ((in-hole H   (/  number_1        number_2)       ) ctx) 
         ((in-hole H  ,(/ (term number_1) (term number_2)) ) ctx)
         "div1")
-       
-   ))
+   (--> ((in-hole H  (get  (⇒ ((string_1 value_1)... (string_2 value_2) (string_3 value_3)...))        string_2)      )  ctx)
+        ((in-hole H (map-get ((string_1 value_1)... (string_2 value_2) (string_3 value_3)...) string_2)) ctx)
+        "get")
+   (--> ((in-hole H (put (⇒ ((string_1 value_1)...)) string value)) ctx)
+        ((in-hole H (⇒ ((string value) (string_1 value_1)...))) ctx)
+        "put")))
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
 ;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
@@ -84,13 +108,17 @@
 #;(traces expr-red (term ((+ (+ 1 1) 2) ())) )
 #;(traces expr-red (term ((+ (+ X 1) 2) ((X 10)))) )
 #;(traces expr-red (term ((+ (+ 2 4) (+ 1 2)) ()) ))
-
+#;(traces expr-red (term ((get (⇒ (("1" (+ 1 2)) ("2" (+ 0 1)))) "2") ())))
+#;(traces expr-red (term ((⇒ (("1" 1) ("2" (+ 1 2)))) ())))
+#;(traces expr-red (term ((put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) ())))
+#;(traces expr-red (term ((get (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) "C") ())))
 
 ; The so-precious in-hole examaples ! 
 ;
 #;(redex-match ctx-AttributeL (in-hole H (+ number_1 number_2)) (term (+ 5 (+ 1 (+ 2 3))) ) )
 #;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 1 (+ 2 3)) 5) ) )
 #;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 2 4) (+ 1 2)) ) ) 
+
 
 
 (define apeg-red
@@ -104,24 +132,27 @@
         ( ( (← x value) Update ...) ctx input r)
         (where #t (notSingleton expr))
         (where ((value ctx_1) (value_2 ctx_2)...) ,(apply-reduction-relation* expr-red (term (expr ctx)) ))
-        "eval-expr")       
-   ))
+        "eval-expr")))
 
 
 (define-metafunction ctx-AttributeL
+    map-get : ((string value)...) string -> value
+  [(map-get () string) undef]
+  [(map-get ((string value) (string_1 value_1)...) string) value]
+  [(map-get ((string value) (string_1 value_1)...) string_2) (map-get ((string_1 value_1)...) string_2)])
+
+(define-metafunction ctx-AttributeL
     update_val : x value ctx -> ctx 
-   [(update_val x value ()) ((x value))]
-   [(update_val x value ((x value_2) (x_1 value_1)...) ) ((x value) (x_1 value_1)...)]
-   [(update_val x value ((x_1 value_1) (x_2 value_2)...) ) ((x_1 value_1) (look x ((x_2 value_2) ...))) ]
-  )
+  [(update_val x value ()) ((x value))]
+  [(update_val x value ((x value_2) (x_1 value_1)...) ) ((x value) (x_1 value_1)...)]
+  [(update_val x value ((x_1 value_1) (x_2 value_2)...) ) ((x_1 value_1) (look x ((x_2 value_2) ...)))])
 
 (define-metafunction PegL
     notSingleton : expr -> boolean 
-   [(notSingleton value)  #f]
-   [(notSingleton expr)   #t]
-  )
+  [(notSingleton value)  #f]
+  [(notSingleton expr)   #t])
 
 
 ;(traces apeg-red (term ( ((← A 1)) ((A 234)) ("a" 0 ()) indef) ))
-(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
-(apply-reduction-relation* expr-red (term (  (+ 1 A)  ((A 234)) )  ))
+;(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
+;(apply-reduction-relation* expr-red (term (  (+ 1 A)  ((A 234)) )  ))
