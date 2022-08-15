@@ -53,6 +53,7 @@
 
 ;;;;;;;;;;;;;;;;;;
 ;; Ainda nao chegamos aqui, ainda
+
 (define-extended-language PegL ctx-AttributeL
   (APeg  (Update ... )
          any)
@@ -68,7 +69,10 @@
   len : string -> natural
   [(len  string) ,(= (string-length (term string) 1))])
 
+
 ;;;;;;;;;;;
+;;;
+
 
 (define expr-red
   (reduction-relation
@@ -94,7 +98,13 @@
         "get")
    (--> ((in-hole H (put (⇒ ((string_1 value_1)...)) string value)) ctx)
         ((in-hole H (⇒ ((string value) (string_1 value_1)...))) ctx)
-        "put")))
+        "put")
+   (--> ((in-hole H (: value_1 (value_2 ...)))       ctx)
+        ((in-hole H (: () (value value_2 ...)))    ctx)
+        "list")
+   (--> ((in-hole H (: value_1 value_2))         ctx)
+        ((in-hole H (term (value_1 value_2)))    ctx)
+        "list_solo")))
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
 ;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
