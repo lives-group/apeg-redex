@@ -53,11 +53,15 @@
 
 ;;;;;;;;;;;;;;;;;;
 ;; Ainda nao chegamos aqui, ainda
+;; CRIAR UMA SINTAXE DE PEG com nova construção (update)
+; uma peg pode ser uma lista de updates
+;AÇUCAR SINTATICO DO ATRIBUTED PEG
+; atributos
 
 (define-extended-language PegL ctx-AttributeL
   (APeg  (Update ... )
          any)
-  (Update (← x expr))
+  (Update (← x expr)) ; n = n - 1
  
   (input (string natural (natural ...)))
   (r ok
@@ -99,12 +103,12 @@
    (--> ((in-hole H (put (⇒ ((string_1 value_1)...)) string value)) ctx)
         ((in-hole H (⇒ ((string value) (string_1 value_1)...))) ctx)
         "put")
-   (--> ((in-hole H (: value_1 (value_2 ...)))       ctx)
-        ((in-hole H (term (value_1 value_2 ...)))    ctx)
-        "list")
-   #;(--> ((in-hole H (: value_1 value_2))         ctx)
-        ((in-hole H (term (value_1 value_2)))    ctx)
-        "list_solo")))
+   (--> ((in-hole H (head (: value_1 value_2)))       ctx)
+        ((in-hole H value_1)    ctx)
+        "head")
+   (--> ((in-hole H (tail (: value_1 value_2)))       ctx)
+        ((in-hole H value_2)    ctx)
+        "tail") ))
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
 ;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
@@ -122,8 +126,9 @@
 #;(traces expr-red (term ((⇒ (("1" 1) ("2" (+ 1 2)))) ())))
 #;(traces expr-red (term ((put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) ())))
 #;(traces expr-red (term ((get (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) "C") ())))
-(traces expr-red (term ((: (+ 1 0) (2 3)) ()) ))
-
+#;(traces expr-red (term ((: (+ 1 0) (: (+ 2 3) nil)) ()) ))
+#;(traces expr-red (term ((head (: (+ 1 0) (: (+ 2 3) nil))) ()) ))
+#;(traces expr-red (term ((tail (: (+ 1 0) (: (+ 2 3) nil))) ()) ))
 
 ; The so-precious in-hole examaples ! 
 ;
@@ -143,7 +148,8 @@
    (--> ( ( (← x expr) Update ...) ctx input r) 
         ( ( (← x value) Update ...) ctx input r)
         (where #t (notSingleton expr))
-        (where ((value ctx_1) (value_2 ctx_2)...) ,(apply-reduction-relation* expr-red (term (expr ctx)) ))
+        (where ((value ctx_1) (value_2 ctx_2)...)
+               ,(apply-reduction-relation* expr-red (term (expr ctx)) ))
         "eval-expr")))
 
 
@@ -166,5 +172,11 @@
 
 
 ;(traces apeg-red (term ( ((← A 1)) ((A 234)) ("a" 0 ()) indef) ))
-;(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
+(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
 ;(apply-reduction-relation* expr-red (term (  (+ 1 A)  ((A 234)) )  ))
+
+;organizar o repo
+;separar em duas linguagens
+;trazer a sintaxe de peg pra cá
+;attrPeg - Peg
+;ler o artigo http://www.llp.dcc.ufmg.br/Publications/Journal2014/2014-scp-leonardo-formal-apeg.pdf
