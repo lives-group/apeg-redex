@@ -100,9 +100,9 @@
         ((in-hole H (⇒ ((string value) (string_1 value_1)...))) ctx)
         "put")
    (--> ((in-hole H (: value_1 (value_2 ...)))       ctx)
-        ((in-hole H (: () (value value_2 ...)))    ctx)
+        ((in-hole H (term (value_1 value_2 ...)))    ctx)
         "list")
-   (--> ((in-hole H (: value_1 value_2))         ctx)
+   #;(--> ((in-hole H (: value_1 value_2))         ctx)
         ((in-hole H (term (value_1 value_2)))    ctx)
         "list_solo")))
 
@@ -122,6 +122,8 @@
 #;(traces expr-red (term ((⇒ (("1" 1) ("2" (+ 1 2)))) ())))
 #;(traces expr-red (term ((put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) ())))
 #;(traces expr-red (term ((get (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) "C") ())))
+(traces expr-red (term ((: (+ 1 0) (2 3)) ()) ))
+
 
 ; The so-precious in-hole examaples ! 
 ;
