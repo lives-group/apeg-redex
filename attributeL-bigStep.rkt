@@ -2,10 +2,9 @@
 (require redex)
 (require "attributeL-syntax.rkt")
 
-
-(define-judgment-form AttributeL
+(define-judgment-form val-AttributeL
   #:mode (eval I I O)
-  #:contract (eval ctx expr l)
+  #:contract (eval ctx expr value)
   
   [-------------------------------- 
    (eval ctx number number)]
@@ -42,53 +41,61 @@
    ------------------------------------
    (eval ctx (tail (: _ expr_2)) number)]
 
-  [(eval ctx expr_1
-         (⇒ ((string_1 l_1)... (string_2 l_2) (string_3 l_3)...)))
-   (eval ctx expr_2 string_2)
+  #;[(eval ctx expr_7
+         (⇒ ((expr_1 expr_2)... (expr_3 expr_4) (expr_5 expr_6)...)))
+   (eval ctx expr_8 string_2)
+   (eval ctx expr_3 string_2)
+   (eval ctx expr_4 value_1)
    ------------------------------------
-   (eval ctx (get expr_1 expr_2) l_2)]
+   (eval ctx (get expr_7 expr_8) value_1)]
 
-  #;[(eval ctx expr_1 string_2)
-   (eval ctx expr_2 l_2)
+  [(eval ctx expr_1 (⇒ ((string_1 value_1))))
+   (eval ctx expr_2 string_1)
    ------------------------------------
-   (eval ctx (⇒ ((string_1 l_1)... (expr_1 expr_2) (expr_3 expr_4)... ))
-         (⇒ ((string_1 l_1) (string_2 l_2))... ))]
+   (eval ctx (get expr_1 expr_2) value_1)]
+
+  [(eval ctx expr_1 string_1)
+   (eval ctx expr_2 value_1)
+   ------------------------------------
+   (eval ctx (⇒ ((expr_1 expr_2))) (⇒ ((string_1 value_1))))]
   
  
+
   #;[
-     (eval ctx expr_2 l_2)
+     (eval ctx expr_2 value_2)
      ------------------------------------
      (eval ctx (put (⇒ ((string_1 expr_1)...)) string expr_2)
-           (⇒ ((string l_2) (string_1 expr_1)...)))]
+           (⇒ ((string value_2) (string_1 expr_1)...)))]
 
   )
 
 #;(define-metafunction ctx-AttributeL
-  map-get : ((string l)...) string -> l
+  map-get : ((string value)...) string -> value
   [(map-get () string) undef]
-  [(map-get ((string l) (string_1 l_1)...) string) l]
-  [(map-get ((string l) (string_1 l_1)...) string_2) (map-get ((string_1 l_1)...) string_2)])
+  [(map-get ((string value) (string_1 value_1)...) string) value]
+  [(map-get ((string value) (string_1 value_1)...) string_2) (map-get ((string_1 value_1)...) string_2)])
 
 
-#;(define-metafunction ctx-AttributeL
-  look : x ((x l) ...) -> l
+(define-metafunction val-AttributeL
+  look : x ((x value) ...) -> value
   [(look x ()) undef]
-  [(look x ((x l) (x_1 l_1)...) ) l]
-  [(look x ((x_1 l) (x_2 l_1)...) ) (look x ((x_2 l_1) ...)) ]
+  [(look x ((x value) (x_1 value_1)...) ) value]
+  [(look x ((x_1 value) (x_2 value_1)...) ) (look x ((x_2 value_1) ...)) ]
   )
+(judgment-holds (eval () (⇒ (("1" 3))) value) value)
 
 
-;(judgment-holds (eval ((x 4) (y 2)) (head (: (+ x 3) 4)) l) l)
-;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) 4)) l) l)
-;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) (- x 3))) l) l)
-(judgment-holds (eval () (get (⇒ (("1" (+ 1 2)) ("2" (+ 0 1)))) "2") l) l)
-;(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) l) l)
+;(judgment-holds (eval ((x 4) (y 2)) (head (: (+ x 3) 4)) value) value)
+;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) 4)) value) value)
+;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) (- x 3))) value) value)
+;(judgment-holds (eval () (get (⇒ (("1" 3))) "1") value) value)
+;(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) value) value)
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
-;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) l) l)
-;(judgment-holds (eval ((x 3)) (+ (* x 7) (/ x 3)) l) l)
-;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* y 3)) l) l)
-;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* t 3)) l) l)
+;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
+;(judgment-holds (eval ((x 3)) (+ (* x 7) (/ x 3)) value) value)
+;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* y 3)) value) value)
+;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* t 3)) value) value)
 
 
 
@@ -105,4 +112,3 @@
 #;(redex-match ctx-AttributeL (in-hole H (+ number_1 number_2)) (term (+ 5 (+ 1 (+ 2 3))) ) )
 #;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 1 (+ 2 3)) 5) ) )
 #;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 2 4) (+ 1 2)) ) ) 
-

@@ -1,9 +1,9 @@
 #lang racket
 (require redex)
 (require rackcheck)
-(require "../redexAPEG/Redex-PEG/peg/lang/peg.rkt")
+(require "attributeL-syntax.rkt")
 
-(define-extended-language AttributePeg Peg
+(define-extended-language AttributePeg AttributeL
   (ctx (e ...))
   (H natural    ; Terminal
      (/ e H)     ; Choice

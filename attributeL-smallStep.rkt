@@ -1,6 +1,7 @@
 #lang racket
 (require redex)
-(require "syntax.rkt")
+(provide (all-defined-out))
+(require "attributeL-syntax.rkt")
 
 (define-extended-language ctx-AttributeL AttributeL
   (VS (expr ctx))
@@ -91,21 +92,6 @@
 
 
 
-(define apeg-red
-  (reduction-relation
-   PegL
-   #:domain st
-   (--> ( ( (← x value) Update ...) ctx input r) 
-        ( (Update ...) (update_val x value ctx) input r)
-        "update")
-   (--> ( ( (← x expr) Update ...) ctx input r) 
-        ( ( (← x value) Update ...) ctx input r)
-        (where #t (notSingleton expr))
-        (where ((value ctx_1) (value_2 ctx_2)...)
-               ,(apply-reduction-relation* expr-red (term (expr ctx)) ))
-        "eval-expr")))
-
-
 (define-metafunction ctx-AttributeL
     map-get : ((string value)...) string -> value
   [(map-get () string) undef]
@@ -118,14 +104,9 @@
   [(update_val x value ((x value_2) (x_1 value_1)...) ) ((x value) (x_1 value_1)...)]
   [(update_val x value ((x_1 value_1) (x_2 value_2)...) ) ((x_1 value_1) (look x ((x_2 value_2) ...)))])
 
-(define-metafunction PegL
-    notSingleton : expr -> boolean 
-  [(notSingleton value)  #f]
-  [(notSingleton expr)   #t])
-
 
 ;(traces apeg-red (term ( ((← A 1)) ((A 234)) ("a" 0 ()) indef) ))
-(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
+;(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
 ;(apply-reduction-relation* expr-red (term (  (+ 1 A)  ((A 234)) )  ))
 
 ;organizar o repo

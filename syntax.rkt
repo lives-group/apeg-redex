@@ -2,25 +2,8 @@
 
 (require redex)
 (provide (all-defined-out))
+(require "attributeL-smallStep.rkt")
 
-; Syntax
-(define-language AttributeL
-  (expr l
-        (⇒ ((expr expr) ...))
-        (get expr expr)
-        (put expr expr expr)
-        (: expr expr) ;; do lista
-        nil           ;; lista empty
-        (head expr)
-        (tail expr)
-        (+  expr expr)
-        (*  expr expr)
-        (÷  expr expr)
-        (-  expr expr)
-        x)
-  (l number
-     string)
-  (x variable-not-otherwise-mentioned))
 
 (define-extended-language ctx-AttributeL AttributeL
   (VS (expr ctx))
@@ -74,14 +57,22 @@
   len : string -> natural
   [(len  string) ,(= (string-length (term string) 1))])
 
+(define-metafunction PegL
+    notSingleton : expr -> boolean 
+  [(notSingleton value)  #f]
+  [(notSingleton expr)   #t])
 
-(define-extended-language Peg PegL ;; Peg syntax
-   (p
-    (Update ...)
-    (• expr expr)
-    (/ expr expr)
-    (* expr)
-    (! expr)
-    ε))
-;;;;;;;;;;;
-;;;
+(define apeg-red
+  (reduction-relation
+   PegL
+   #:domain st
+   (--> ( ( (← x value) Update ...) ctx input r) 
+        ( (Update ...) (update_val x value ctx) input r)
+        "update")
+   (--> ( ( (← x expr) Update ...) ctx input r) 
+        ( ( (← x value) Update ...) ctx input r)
+        (where #t (notSingleton expr))
+        (where ((value ctx_1) (value_2 ctx_2)...)
+               ,(apply-reduction-relation* expr-red (term (expr ctx)) ))
+        "eval-expr")))
+
