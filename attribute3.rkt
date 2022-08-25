@@ -1,100 +1,23 @@
 #lang racket
 (require redex)
-
-; Syntax
-(define-language AttributeL
-  (expr l
-        (⇒ ((expr expr) ...))
-        (get expr expr)
-        (put expr expr expr)
-        (: expr expr) ;; do lista
-        nil           ;; lista empty
-        (head expr)
-        (tail expr)
-        (+  expr expr)
-        (*  expr expr)
-        (/  expr expr)
-        (-  expr expr)
-        x)
-  (l number
-     string)
-  (x variable-not-otherwise-mentioned))
-  
-(define-extended-language ctx-AttributeL AttributeL
-  (VS (expr ctx))
-  (ctx ((x value)...))
-  (H (+  H expr)
-     (+  value H)
-     (*  H expr)
-     (*  value H)
-     (-  H expr)
-     (-  value H)
-     (/  H expr)
-     (/  value H)
-     (get H expr)
-     (get value H)
-     (put H expr expr)
-     (put (⇒ ((string value)...)) H expr)
-     (put (⇒ ((string value)...)) string H)
-     (: H expr)
-     (: value H)
-     (head H)
-     (tail H)
-     (⇒ ((string value)... (H expr)   (expr expr)...))
-     (⇒ ((string value)... (string H) (expr expr)...))
-     hole)
-  (value number
-         string
-         (⇒ ((string value) ...))
-         (: value value)
-         nil
-         undef))
-
-
-;;;;;;;;;;;;;;;;;;
-;; Ainda nao chegamos aqui, ainda
-;; CRIAR UMA SINTAXE DE PEG com nova construção (update)
-; uma peg pode ser uma lista de updates
-;AÇUCAR SINTATICO DO ATRIBUTED PEG
-; atributos
-
-(define-extended-language PegL ctx-AttributeL
-  (APeg  (Update ... )
-         any)
-  (Update (← x expr)) ; n = n - 1
- 
-  (input (string natural (natural ...)))
-  (r ok
-     fail
-     indef)
-  (st (APeg ctx input r)))
-
-(define-metafunction PegL
-  len : string -> natural
-  [(len  string) ,(= (string-length (term string) 1))])
-
-
-;;;;;;;;;;;
-;;;
-
+(require "syntax.rkt")
 
 (define expr-red
-  (reduction-relation
-   ctx-AttributeL
-   #:domain VS
-   (--> ((in-hole H   (+  number_1        number_2)       ) ctx) 
+  (reduction-relation ctx-AttributeL
+  #:domain VS
+   (--> ((in-hole H   (+  number_1        number_2)       ) ctx)
         ((in-hole H  ,(+ (term number_1) (term number_2)) ) ctx)
         "add1")
-   (--> ((in-hole H   x)     ( (x_1 value_1)... (x value) (x_2 value_2)... ) )  
+   (--> ((in-hole H   x)     ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
         ((in-hole H   value ) ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
         "var")
-   (--> ((in-hole H   (*  number_1        number_2)       ) ctx) 
+   (--> ((in-hole H   (*  number_1        number_2)       ) ctx)
         ((in-hole H  ,(* (term number_1) (term number_2)) ) ctx)
         "mult1")
-   (--> ((in-hole H   (-  number_1        number_2)       ) ctx) 
+   (--> ((in-hole H   (-  number_1        number_2)       ) ctx)
         ((in-hole H  ,(- (term number_1) (term number_2)) ) ctx)
         "sub1")
-   (--> ((in-hole H   (/  number_1        number_2)       ) ctx) 
+   (--> ((in-hole H   (÷ number_1        number_2)       ) ctx)
         ((in-hole H  ,(/ (term number_1) (term number_2)) ) ctx)
         "div1")
    (--> ((in-hole H  (get  (⇒ ((string_1 value_1)... (string_2 value_2) (string_3 value_3)...))        string_2)      )  ctx)
@@ -112,7 +35,7 @@
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
 ;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
-;(judgment-holds (eval ((x 3)) (+ (* x 7) (/ x 3)) value) value)
+;(judgment-holds (eval ((x 3)) (+ (* x 7) (÷ x 3)) value) value)
 ;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* y 3)) value) value)
 ;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* t 3)) value) value)
 
