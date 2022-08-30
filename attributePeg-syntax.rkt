@@ -1,8 +1,8 @@
 #lang racket
 
 (require redex)
-(require rackcheck)
 (require "attributeL-syntax.rkt")
+(provide (all-defined-out))
 
 (define-extended-language AttributePeg AttributeL ;; Peg syntax
   (p 
