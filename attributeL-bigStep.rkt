@@ -11,6 +11,9 @@
 
   [-------------------------------- 
    (eval ctx string string)]
+  
+  [-------------------------------- 
+   (eval ctx (⇒ (string value)...) (⇒ (string value)...))]
 
   [
    -------------------------------- 
@@ -44,20 +47,18 @@
    ------------------------------------
    (eval ctx (tail (: _ expr_2)) number)]
 
-  #;[(eval ctx expr_7
-         (⇒ ((expr_1 expr_2)... (expr_3 expr_4) (expr_5 expr_6)...)))
-   (eval ctx expr_8 string_2)
-   (eval ctx expr_3 string_2)
-   (eval ctx expr_4 value_1)
+  [(eval ctx expr_1
+         (⇒ ((string_1 value_1)... (string_2 value_2) (string_3 value_3)...)))
+   (eval ctx expr_2 string_2)
    ------------------------------------
-   (eval ctx (get expr_7 expr_8) value_1)]
+   (eval ctx (get expr_1 expr_2) value_2)]
 
-  [(eval ctx expr_1 (⇒ ((string_1 value_1))))
+  #;[(eval ctx expr_1 (⇒ ((string_1 value_1))))
    (eval ctx expr_2 string_1)
    ------------------------------------
    (eval ctx (get expr_1 expr_2) value_1)]
 
-  [(eval ctx expr_1 string_1)
+  #;[(eval ctx expr_1 string_1)
    (eval ctx expr_2 value_1)
    ------------------------------------
    (eval ctx (⇒ ((expr_1 expr_2))) (⇒ ((string_1 value_1))))]
@@ -85,13 +86,13 @@
   [(look x ((x value) (x_1 value_1)...) ) value]
   [(look x ((x_1 value) (x_2 value_1)...) ) (look x ((x_2 value_1) ...)) ]
   )
-(judgment-holds (eval () (⇒ (("1" 3))) value) value)
+(judgment-holds (eval () (⇒ (("1" 3) ("1" 3))) value) value)
 
 
 ;(judgment-holds (eval ((x 4) (y 2)) (head (: (+ x 3) 4)) value) value)
 ;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) 4)) value) value)
 ;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) (- x 3))) value) value)
-(judgment-holds (eval () (get (⇒ (("1" 3))) "1") value) value)
+(judgment-holds (eval () (get (⇒ (("1" 3) ("2" 4))) "1") value) value)
 ;(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) value) value)
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
