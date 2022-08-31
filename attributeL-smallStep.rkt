@@ -71,10 +71,10 @@
 ;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* t 3)) value) value)
 
 #;(traces expr-red (term ( Z ((X 10) (Y 20)))) )
-#;(traces expr-red (term ((+ 1 2) () ) ) )
+#;(apply-reduction-relation* expr-red (term ((+ 1 2) () ) ) )
 #;(traces expr-red (term ((+ 2 (+ 1 2)) ()) )) 
 #;(traces expr-red (term ((+ (+ 1 1) 2) ())) )
-#;(traces expr-red (term ((+ (+ X 1) 2) ((X 10)))) )
+#;(apply-reduction-relation* expr-red (term ((+ (+ X 1) 2) ((X 10)))) )
 #;(traces expr-red (term ((+ (+ 2 4) (+ 1 2)) ()) ))
 #;(traces expr-red (term ((get (⇒ (("1" (+ 1 2)) ("2" (+ 0 1)))) "2") ())))
 #;(traces expr-red (term ((⇒ (("1" 1) ("2" (+ 1 2)))) ())))

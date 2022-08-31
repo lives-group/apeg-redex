@@ -1,6 +1,7 @@
 #lang racket
 (require redex)
 (require "attributeL-syntax.rkt")
+(provide (all-defined-out))
 
 (define-judgment-form val-AttributeL
   #:mode (eval I I O)
@@ -73,7 +74,6 @@
 
 ;FALTA O PUT
 ;TESTAR MESMO RESULTADO DO SMALL STEP COM O BIG STEP
-;
 
 (define-metafunction val-AttributeL
   look : x ((x value) ...) -> value
