@@ -14,7 +14,7 @@
 
   [
    -------------------------------- 
-   (eval ctx x (look x ctx))]
+   (eval ((_ _)... (x value) (_ _)...) x value)]
 
   [(eval ctx expr_1 number_1)
    (eval ctx expr_2 number_2)
@@ -60,7 +60,7 @@
    -------------------------------------------------"map-mult"
    (eval ctx (⇒ ((expr_1 expr_2) (expr_3 expr_4)...) ) (⇒ ((string_1 value_1) (value_3 value_4)...) ))]
    
-  [ (eval ctx expr_1 string)
+  #;[ (eval ctx expr_1 string)
     (eval ctx expr_2 value)
     ------------------------------------"map-one"
     (eval ctx (⇒ ((expr_1 expr_2))) (⇒ ((string value))))]
@@ -71,12 +71,9 @@
    ----------------------------------------------- "get"
    (eval ctx (get expr_1 expr_2) value )])
 
-#;(define-metafunction ctx-AttributeL
-    map-get : ((string value)...) string -> value
-    [(map-get () string) undef]
-    [(map-get ((string value) (string_1 value_1)...) string) value]
-    [(map-get ((string value) (string_1 value_1)...) string_2) (map-get ((string_1 value_1)...) string_2)])
-
+;FALTA O PUT
+;TESTAR MESMO RESULTADO DO SMALL STEP COM O BIG STEP
+;
 
 (define-metafunction val-AttributeL
   look : x ((x value) ...) -> value
