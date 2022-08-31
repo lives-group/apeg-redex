@@ -89,15 +89,15 @@
 ;; am i testing this code or is it testing me?
 
 
-(judgment-holds (eval () (⇒ (("1" 3) ("2" 1))) value) value)
-(judgment-holds (eval () (⇒ (("1" 3))) value) value)
-(judgment-holds (eval () (⇒ ()) value) value)
+;(judgment-holds (eval () (⇒ (("1" 3) ("2" 1))) value) value)
+;(judgment-holds (eval () (⇒ (("1" 3))) value) value)
+;(judgment-holds (eval () (⇒ ()) value) value)
 
 ;(judgment-holds (eval ((x 4) (y 2)) (head (: (+ x 3) 4)) value) value)
 ;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) 4)) value) value)
 ;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) (- x 3))) value) value)
-(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "2") value) value)
-(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "1") value) value)
+;(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "2") value) value)
+;(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "1") value) value)
 ;(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) value) value)
 
 ;(traces expr-red (term ((* 1 2) () ) ) )

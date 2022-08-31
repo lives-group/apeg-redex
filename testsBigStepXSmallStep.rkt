@@ -10,9 +10,9 @@
   )
 
 (check-equal?
- (judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "2") value) value)
+ (car (judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "2") value) value))
  (get-result
   (apply-reduction-relation*
    expr-red
-   (term ((+ 2 (+ 1 2)) ()) ))))
+   (term ((get (⇒ (("1" 1) ("2" 2))) "2") ()) ))))
 
