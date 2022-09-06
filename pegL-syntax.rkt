@@ -8,9 +8,8 @@
   (p 
    (Update ...)
    natural
-   (• p p)
-   (/ p p)
+   (• p p) ;
+   (/ p p) ;
    (* p)
    (! p)
-   ε)
-  )
+   ε))
