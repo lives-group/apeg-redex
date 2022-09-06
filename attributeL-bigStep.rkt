@@ -62,9 +62,9 @@
    (eval ctx (⇒ ((expr_1 expr_2) (expr_3 expr_4)...) ) (⇒ ((string_1 value_1) (value_3 value_4)...) ))]
    
   #;[ (eval ctx expr_1 string)
-    (eval ctx expr_2 value)
-    ------------------------------------"map-one"
-    (eval ctx (⇒ ((expr_1 expr_2))) (⇒ ((string value))))]
+      (eval ctx expr_2 value)
+      ------------------------------------"map-one"
+      (eval ctx (⇒ ((expr_1 expr_2))) (⇒ ((string value))))]
 
 
   [(eval ctx expr_2 string)
@@ -72,10 +72,28 @@
    ----------------------------------------------- "get"
    (eval ctx (get expr_1 expr_2) value )]
    
-   [(eval ctx expr_2 value_2)
-    (eval ctx expr_1 (⇒ ((string_1 value_1)... ) )) ;;precisa verificar se ja existe a entrada?
-    -----------------------------------------"put"
-   (eval ctx (put expr_1 string expr_2) (⇒ ((string_1 value_1)... (string value_2))))])
+  #;[(eval ctx expr_2 value_2)
+   (eval ctx expr_1 (⇒ ((string_1 value_1)... ) )) ;;precisa verificar se ja existe a entrada?
+   -----------------------------------------"put"
+   (eval ctx (put expr_1 string expr_2) (⇒ ((string_1 value_1)... (string value_2))))]
+
+  [(eval ctx expr_2 value_2)
+   (eval ctx expr_1 (⇒ () )) 
+   -----------------------------------------"put-empty"
+   (eval ctx (put expr_1 string expr_2) (⇒ ((string value_2))))]
+
+  [(eval ctx expr_2 value_1)
+   (eval ctx expr_1 (⇒ ((string_1 value_3) (string_2 value_4)... ) ))
+   -----------------------------------------"put-rec"
+   (eval ctx (put expr_1 string_1 expr_2) (⇒ ((string_1 value_1) (string_2 value_4)... ) ))]
+
+  [(eval ctx expr_1 (⇒ ((string_1 value_3) (string_2 value_4)... ) ))
+   (eval ctx (put (⇒ ((string_2 value_4)... )) string expr_2) (⇒ ((string_4 value_5)... )))
+   (side-condition (diff string string_1))
+   -----------------------------------------"put-rec2"
+   (eval ctx (put expr_1 string expr_2) (⇒ ((string_1 value_3) (string_4 value_5)... ) ))]
+
+  )
 
 ;FALTA O PUT
 ;TESTAR MESMO RESULTADO DO SMALL STEP COM O BIG STEP
@@ -87,7 +105,9 @@
   [(look x ((x_1 value) (x_2 value_1)...) ) (look x ((x_2 value_1) ...)) ])
 
 
-
+(define-metafunction val-AttributeL
+  [(diff string_1 string_1) #f]
+  [(diff string_1 string_2) #t]) 
 
 
 ;; am i testing this code or is it testing me?
@@ -102,7 +122,7 @@
 ;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) (- x 3))) value) value)
 ;(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "2") value) value)
 ;(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "1") value) value)
-;(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) value) value)
+(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) value) value)
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
 ;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
