@@ -70,7 +70,12 @@
   [(eval ctx expr_2 string)
    (eval ctx expr_1 (⇒ ((_ _)...  (string value) (_ _)...) ))
    ----------------------------------------------- "get"
-   (eval ctx (get expr_1 expr_2) value )])
+   (eval ctx (get expr_1 expr_2) value )]
+   
+   [(eval ctx expr_2 value_2)
+    (eval ctx expr_1 (⇒ ((string_1 value_1)... ) )) ;;precisa verificar se ja existe a entrada?
+    -----------------------------------------"put"
+   (eval ctx (put expr_1 string expr_2) (⇒ ((string_1 value_1)... (string value_2))))])
 
 ;FALTA O PUT
 ;TESTAR MESMO RESULTADO DO SMALL STEP COM O BIG STEP
@@ -79,8 +84,7 @@
   look : x ((x value) ...) -> value
   [(look x ()) undef]
   [(look x ((x value) (x_1 value_1)...) ) value]
-  [(look x ((x_1 value) (x_2 value_1)...) ) (look x ((x_2 value_1) ...)) ]
-  )
+  [(look x ((x_1 value) (x_2 value_1)...) ) (look x ((x_2 value_1) ...)) ])
 
 
 
