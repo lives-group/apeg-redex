@@ -70,7 +70,7 @@
 
   ;Update
 
-  [ (eval ctx G (p r_1) s) ;; eu preciso salvar no x o resultado do p (expr) ou o termo todo? 
+  #;[ (eval ctx G (p r_1) s) ;; eu preciso salvar no x o resultado do p (expr) ou o termo todo? 
     (eval ctx G x s)
    ;(eval ctx G ((← x expr) ...) )
    ----------------------------------"Update"
