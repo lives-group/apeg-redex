@@ -71,13 +71,12 @@
 
   ;Update
   ;; eu preciso salvar no x o resultado do p (expr) ou o termo todo? 
-  [ (parse ((x _)...) G (expr r_1) s)
-    (parse ((x _)...) G x s)
-    (eval ((x _)...) expr value)
+  [(parse ((x_1 value_1)... (x value) (x_2 value_2)...) G x s)
+   (eval ((x_1 value_1)... (x value) (x_2 value_2)...) expr value)
    ----------------------------------"Update"
-   (parse ((x value)...) G (((← x expr) ...) r_1) s)]
+   (parse ((x_1 value_1)... (x value) (x_2 value_2)...) G (((← x expr) ...) r_1) s)]
 
-)
+  )
 
 (define-metafunction val-AttributePeg
   [(dismatch? natural_1 natural_1) #f]
