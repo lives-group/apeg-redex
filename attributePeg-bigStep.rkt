@@ -115,7 +115,8 @@
 
 ;UPDATE
 (judgment-holds (parse ((x 1) (y 2)) ∅ (((← x 3)) (1 1 1)) s ctx) ctx)
-
+(judgment-holds (parse ((x 1) (y 2)) ∅ (((← x (+ 1 2))) (1 1 1)) s ctx) (s ctx))
+;;testar e estudar o artigo pra veer como vai fazer o terminal
 ;MIX
 (judgment-holds (parse () ∅ ((* (/ (• 1 2) 3)) (1 2 1 2)) r ctx) r)
 (judgment-holds (parse () ∅ ((/ (• 1 2) (! 3)) (1 2 3)) r ctx) r)

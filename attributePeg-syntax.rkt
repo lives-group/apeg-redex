@@ -6,7 +6,7 @@
 
 (define-extended-language AttributePeg val-AttributeL ;; Peg syntax
   (p
-   ((← x p) ...) ;update ;;where x is a variable name and expr is an attribute expression, using F functions.
+   ((← x expr) ...) ;update ;;where x is a variable name and expr is an attribute expression, using F functions.
    natural
    (• p p)
    (/ p p)
