@@ -35,7 +35,7 @@
   [(eval ctx expr_1 number_1)
    (eval ctx expr_2 number_2)
    ------------------------------------
-   (eval ctx (/ expr_1 expr_2) ,(/ (term number_1) (term number_2)))]
+   (eval ctx (÷ expr_1 expr_2) ,(/ (term number_1) (term number_2)))]
 
   [(eval ctx expr_1 number_1)
    ------------------------------------

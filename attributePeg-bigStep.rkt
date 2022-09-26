@@ -71,8 +71,16 @@
 
   ;Update
   [(eval ((x_1 value_1)... (x value_3) (x_2 value_2)...) expr value)
+   (parse ((x_1 value_1)... (x value) (x_2 value_2)...) G (((← x_3 expr_1)...) s) s_1 ctx)
    ----------------------------------"Update"
-   (parse ((x_1 value_1)... (x value_3) (x_2 value_2)...) G (((← x expr) (← x_1 expr_1)...) s) s ((x_1 value_1)... (x value) (x_2 value_2)...))]
+   (parse ((x_1 value_1)... (x value_3) (x_2 value_2)...) G (((← x expr) (← x_3 expr_1)...) s) s_1 ctx)]
+
+  [----------------------------------"Update-one"
+   (parse ctx G (() s) s ctx)]
+
+  [----------------------------------"Insert"
+   (parse ctx G (() s) s ctx)]
+
 
   [(eval ((x_1 value_1)... (x value_3) (x_2 value_2)...) expr value)
    (side-condition (insert? x_3 ((x_1 value_1)... (x value_3) (x_2 value_2)...)))
@@ -132,7 +140,7 @@
 (judgment-holds (parse ((x 1) (y 2)) ∅ (((← x 3)) (1 1 1)) s ctx) ctx)
 (judgment-holds (parse ((x 1) (y 2)) ∅ (((← x (+ 1 2))) (1 1 1)) s ctx) (s ctx))
 (judgment-holds (parse ((x 1) (y 2)) ∅ (((← x (* 1 2))) (1 1 1)) s ctx) (s ctx))
-;(judgment-holds (parse ((x 1) (y 2)) ∅ (((← x (/ 1 2))) (1 1 1)) s ctx) (s ctx)) ;;n funciona
+(judgment-holds (parse ((x 1) (y 2)) ∅ (((← x (÷ 1 2))) (1 1 1)) s ctx) (s ctx)) 
 (judgment-holds (parse ((x 1) (y 2)) ∅ (((← x (+ (+ 1 2) 2))) (1 1 1)) s ctx) (s ctx))
 (judgment-holds (parse ((x 1) (y 2)) ∅ (((← x (+ (+ 1 2) (- 1 6)))) (1 1 1)) s ctx) (s ctx))
 (judgment-holds (parse ((x 1) (y 2)) ∅ (((← x (+ (+ 1 2) (- 1 6))) (← y (+ (+ 1 2) (- 1 6)))) (1 1 1)) s ctx) (s ctx)) ;; nao funciona
