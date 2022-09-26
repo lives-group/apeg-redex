@@ -95,9 +95,6 @@
 
   )
 
-;FALTA O PUT
-;TESTAR MESMO RESULTADO DO SMALL STEP COM O BIG STEP
-
 (define-metafunction val-AttributeL
   look : x ((x value) ...) -> value
   [(look x ()) undef]

@@ -71,11 +71,17 @@
 
   ;Update
   ;; eu preciso salvar no x o resultado do p (expr) ou o termo todo? 
-  [ (parse ((x _)...) G (expr r_1) s)
+  #;[ (parse ((x _)...) G (expr r_1) s)
     (parse ((x _)...) G x s)
     (eval ((x _)...) expr value)
    ----------------------------------"Update"
-   (parse ((x value)...) G (((← x expr) ...) r_1) s)]
+   (parse ((x expr)...) G (((← x expr) ...) r_1) s)]
+
+  [ 
+    (parse ((p value)...) G p s)
+    (eval ((p value)...) expr value_2)
+   ----------------------------------"Update2"
+   (parse ((p value)...) G (((← p expr)) r_1) s)]
 
 )
 
