@@ -119,7 +119,7 @@
 ;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) (- x 3))) value) value)
 ;(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "2") value) value)
 ;(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "1") value) value)
-(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) value) value)
+;(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) value) value)
 
 ;(traces expr-red (term ((* 1 2) () ) ) )
 ;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
