@@ -99,7 +99,7 @@
 (define-metafunction val-AttributePeg
   evalList : ctx (expr ...) -> (value ...)
   [(evalList ctx ()) ()]
-  [(evalList ctx (expr_1 expr...)) ,(judgment-holds (eval ctx expr_1 value) value)])
+  [(evalList ctx (expr ...)) ()])
 
 (define-metafunction val-AttributePeg
   [(dismatch? natural_1 natural_1) #f]
