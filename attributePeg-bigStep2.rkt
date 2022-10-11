@@ -42,7 +42,7 @@
   ;Not
   [(parse ctx G p r (natural ...) ctx)
    -------------------------------
-   (parse ctx G (! p) r ⊥ ctx)]  
+   (parse ctx G (! p) r ⊥ ctx)]
 
   [(parse ctx G p r ⊥ ctx)
    -------------------------------
@@ -52,7 +52,7 @@
   [
    -------------------------------
    (parse ctx G (* ε) r ⊥ ctx)]
-  
+
   [(parse ctx G p r ⊥ ctx)
    -------------------------------
    (parse ctx G (* p) r r ctx)]
@@ -67,9 +67,14 @@
    (parse ctx G ε r r ctx)]
 
   ;Non-Terminal
-  ;-
+
+  [(eval (expr_1 expr  ...) s (value_1 value ...))
+   (parse ctx () p_1 s s_1 ctx)
+   ------------------------------------"Non-terminal"
+   (parse ctx ((x_3 p_3) (x_1 p_1) (x_2 p_2)...) (x_1 (expr_1 expr ...) (value_1 value...)) s s_1 ctx)]
 
   ;Update
+
   [(eval ((x_1 value_1)... (x value_3) (x_2 value_2)...) expr value)
    (parse ((x_1 value_1)... (x value) (x_2 value_2)...) G ((← x_3 expr_1)...) s s_1 ctx)
    ----------------------------------"Update"
@@ -78,21 +83,23 @@
   [----------------------------------"Update-one"
    (parse ctx G () s s ctx)]
 
-  [----------------------------------"Insert"
-   (parse ctx G () s s ctx)]
 
-
-  [(eval ((x_1 value_1)... (x value_3) (x_2 value_2)...) expr value)
-   (side-condition (insert? x_3 ((x_1 value_1)... (x value_3) (x_2 value_2)...)))
-   ----------------------------------"Update-Insert"
+  [(eval ((x_1 value_1)...) expr value)
+   (parse ((x_3 value) (x_1 value_1)...) G ((← x_2 expr_1)...) s s_1 ctx_1)
+   (side-condition (insert? x_3 ((x_1 value_1)...)))
+   ----------------------------------"Insert-Rec"
    (parse
-    ((x_1 value_1)... (x value_3) (x_2 value_2)...)
+    ((x_1 value_1)...)
     G
-    ((← x_3 expr) (← x_1 expr_1)...)
+    ((← x_3 expr) (← x_2 expr_1)...)
     s
-    s
-    ((x_3 value) (x_1 value_1)... (x value_3) (x_2 value_2)...))]
-  )
+    s_1
+    ctx_1)])
+
+(define-metafunction val-AttributePeg
+  evalList : ctx (expr ...) -> (value ...)
+  [(evalList ctx ()) ()]
+  [(evalList ctx (expr_1 expr...)) ,(judgment-holds (eval ctx expr_1 value) value)])
 
 (define-metafunction val-AttributePeg
   [(dismatch? natural_1 natural_1) #f]
@@ -110,49 +117,49 @@
 
 
 ;TERMINAL
-;(judgment-holds (parse () ∅ 1 (1 2) r ctx) r)
-;(judgment-holds (parse () ∅ 1 (2 2) r ctx) r)
-;(judgment-holds (parse () ∅ 1 () r ctx) r)
+;(judgment-holds (parse () () 1 (1 2) r ctx) r)
+;(judgment-holds (parse () () 1 (2 2) r ctx) r)
+;(judgment-holds (parse () () 1 () r ctx) r)
 ;; CHOICE
-;(judgment-holds (parse () ∅ (/ 1 2) (1 2) r ctx) r)
-;(judgment-holds (parse () ∅ (/ 1 2) (2 1) r ctx) r)
-;(judgment-holds (parse () ∅ (/ 1 2) (3 3) r ctx) r)
-;(judgment-holds (parse () ∅ (/ 1 2) () r ctx) r)
+;(judgment-holds (parse () () (/ 1 2) (1 2) r ctx) r)
+;(judgment-holds (parse () () (/ 1 2) (2 1) r ctx) r)
+;(judgment-holds (parse () () (/ 1 2) (3 3) r ctx) r)
+;(judgment-holds (parse () () (/ 1 2) () r ctx) r)
 ;; SEQUENCE
-;(judgment-holds (parse () ∅ (• 1 2) (1 2) r ctx) r)
-;(judgment-holds (parse () ∅ (• 1 2) (1 2 2) r ctx) r)
-;(judgment-holds (parse () ∅ (• 1 2) (2 2) r ctx) r)
-;(judgment-holds (parse () ∅ (• 1 2) () r ctx) r)
+;(judgment-holds (parse () () (• 1 2) (1 2) r ctx) r)
+;(judgment-holds (parse () () (• 1 2) (1 2 2) r ctx) r)
+;(judgment-holds (parse () () (• 1 2) (2 2) r ctx) r)
+;(judgment-holds (parse () () (• 1 2) () r ctx) r)
 ;; NOT
-;(judgment-holds (parse () ∅ (! 1) (1) r ctx) r)
-;(judgment-holds (parse () ∅ (! 1) (2) r ctx) r)
-;(judgment-holds (parse () ∅ (! 1) () r ctx) r)
-;(judgment-holds (parse () ∅ (! 1) (1 2) r ctx) r)
+;(judgment-holds (parse () () (! 1) (1) r ctx) r)
+;(judgment-holds (parse () () (! 1) (2) r ctx) r)
+;(judgment-holds (parse () () (! 1) () r ctx) r)
+;(judgment-holds (parse () () (! 1) (1 2) r ctx) r)
 ;; REPETITION
-;(judgment-holds (parse () ∅ (* 1) (1 1 1 1 2 3) r ctx) r)
-;(judgment-holds (parse () ∅ (* 1) () r ctx) r)
-;(judgment-holds (parse () ∅ (* ε) (1 2) r ctx) r) ;DA RUIM
+;(judgment-holds (parse () () (* 1) (1 1 1 1 2 3) r ctx) r)
+;(judgment-holds (parse () () (* 1) () r ctx) r)
+;(judgment-holds (parse () () (* ε) (1 2) r ctx) r) ;DA RUIM
 ; EMPTY
-;(judgment-holds (parse () ∅ ε (1 2) r ctx) r)
+;(judgment-holds (parse () () ε (1 2) r ctx) r)
 ;NON-TERMINAL
-;--
+;
 
 ;UPDATE
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← x 3)) (1 1 1) s ctx) ctx)
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← x (+ 1 2))) (1 1 1) s ctx) (s ctx))
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← x (* 1 2))) (1 1 1) s ctx) (s ctx))
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← x (÷ 1 2))) (1 1 1) s ctx) (s ctx)) 
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← x (+ (+ 1 2) 2))) (1 1 1) s ctx) (s ctx))
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← x (+ (+ 1 2) (- 1 6)))) (1 1 1) s ctx) (s ctx))
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← x (+ (+ 1 2) (- 1 6))) (← y (+ (+ 1 2) (- 1 6)))) (1 1 1) s ctx) (s ctx)) ;; nao funciona
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← y (+ 5 2))) (1 1 1) s ctx) (s ctx)) ;; nao funciona
-(judgment-holds (parse ((x 1) (y 2)) ∅ ((← z (+ 2 2))) (1 1 1) s ctx) (s ctx)) ;; nao sei se eh pra ter esse comportamento
+(judgment-holds (parse ((x 1) (y 2)) () ((← x 3)) (1 1 1) s ctx) ctx)
+(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ 1 2))) (1 1 1) s ctx) (s ctx))
+(judgment-holds (parse ((x 1) (y 2)) () ((← x (* 1 2))) (1 1 1) s ctx) (s ctx))
+(judgment-holds (parse ((x 1) (y 2)) () ((← x (÷ 1 2))) (1 1 1) s ctx) (s ctx)) 
+(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) 2))) (1 1 1) s ctx) (s ctx))
+(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) (- 1 6)))) (1 1 1) s ctx) (s ctx))
+(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) (- 1 6))) (← y (+ (+ 1 2) (- 1 6)))) (1 1 1) s ctx) (s ctx)) ;; nao funciona
+(judgment-holds (parse ((x 1) (y 2)) () ((← y (+ 5 2))) (1 1 1) s ctx) (s ctx)) ;; nao funciona
+(judgment-holds (parse ((x 1) (y 2)) () ((← z (+ 2 2)) (← a (+ 2 2)) (← z (+ 2 3))) (1 1 1) s ctx) (s ctx)) ;; nao sei se eh pra ter esse comportamento
 
 ;;testar e estudar o artigo pra veer como vai fazer o terminal
 ;MIX
-;(judgment-holds (parse () ∅ (* (/ (• 1 2) 3)) (1 2 1 2) r ctx) r)
-;(judgment-holds (parse () ∅ (/ (• 1 2) (! 3)) (1 2 3) r ctx) r)
-;(judgment-holds (parse () ∅ (/ (• 1 2) (! 3)) (4) r ctx) r)
+;(judgment-holds (parse () () (* (/ (• 1 2) 3)) (1 2 1 2) r ctx) r)
+;(judgment-holds (parse () () (/ (• 1 2) (! 3)) (1 2 3) r ctx) r)
+;(judgment-holds (parse () () (/ (• 1 2) (! 3)) (4) r ctx) r)
 
 
 
