@@ -99,7 +99,8 @@
 (define-metafunction val-AttributePeg
   evalList : ctx (expr ...) -> (value ...)
   [(evalList ctx ()) ()]
-  [(evalList ctx (expr ...)) ()])
+ ; [(evalList ctx (expr_1 expr ...)) (evalList (expr_1...) (expr ...))]
+  [(evalList ctx (expr_1 expr ...)) ,(judgment-holds (eval ctx expr_1 value) value)])
 
 (define-metafunction val-AttributePeg
   [(dismatch? natural_1 natural_1) #f]
@@ -114,7 +115,6 @@
   [(insert? x ()) #t]
   [(insert? x ((x value) (x_1 value_1)...) ) #f]
   [(insert? x ((x_1 value) (x_2 value_1)...) ) (insert? x ((x_2 value_1) ...)) ])
-
 
 ;TERMINAL
 ;(judgment-holds (parse () () 1 (1 2) r ctx) r)
