@@ -15,7 +15,20 @@
    (! p)
    ε)
   (x variable-not-otherwise-mentioned)
-  (G ((x p) ...)))
+  (G ((x (x ...) (expr ...) p) ...)))
+
+
+
+#|
+S [int k] return n + 1 <- ((n <- k) ('a' (n <- n + 1))* )
+
+(
+ (S
+  (k)
+  ((+ n 1))
+  (• ((← n k)) (* (• 1 ((← n (+ n 1)))) ) ))
+ )
+|#
 
 (define-extended-language val-AttributePeg AttributePeg
   [P (p s)] 

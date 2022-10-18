@@ -20,20 +20,20 @@
    (parse ctx G natural_1 () ⊥ ctx)]
 
   ;Choice 
-  [(parse ctx G p_1 r (natural ...) ctx)
+  [(parse ctx G p_1 r (natural ...) ctx_1)
    --------------------------------
-   (parse ctx G (/ p_1 p_2) r (natural ...) ctx)]
+   (parse ctx G (/ p_1 p_2) r (natural ...) ctx_1)]
 
-  [(parse ctx G p_1 r ⊥ ctx)
-   (parse ctx G p_2 r r_1 ctx)
+  [(parse ctx G p_1 r ⊥ ctx_1)
+   (parse ctx G p_2 r r_1 ctx_2)
    -------------------------------
-   (parse ctx G (/ p_1 p_2) r r_1 ctx)]
+   (parse ctx G (/ p_1 p_2) r r_1 ctx_2)]
 
   ;Sequence
-  [(parse ctx G p_1 r (natural ...) ctx)
-   (parse ctx G p_2 (natural ...) r_2 ctx)
+  [(parse ctx G p_1 r (natural ...) ctx_1)
+   (parse ctx_1 G p_2 (natural ...) r_2 ctx_2)
    -------------------------------
-   (parse ctx G (• p_1 p_2) r r_2 ctx)]
+   (parse ctx G (• p_1 p_2) r r_2 ctx_2)]
 
   [(parse ctx G p_1 r ⊥ ctx)
    ------------------------------
@@ -49,18 +49,15 @@
    (parse ctx G (! p) r r ctx)]
 
   ;Repetition
-  [
-   -------------------------------
-   (parse ctx G (* ε) r ⊥ ctx)]
 
-  [(parse ctx G p r ⊥ ctx)
+  [(parse ctx G p r ⊥ ctx_1)
    -------------------------------
    (parse ctx G (* p) r r ctx)]
 
-  [(parse ctx G p r (natural ...) ctx)
-   (parse ctx G (* p) (natural ...) r_2 ctx)
+  [(parse ctx G p r (natural ...) ctx_1)
+   (parse ctx_1 G (* p) (natural ...) r_2 ctx_2)
    -------------------------------
-   (parse ctx G (* p) r r_2 ctx)]
+   (parse ctx G (* p) r r_2 ctx_2)]
 
   ;Empty
   [-------------------------------
@@ -68,10 +65,12 @@
 
   ;Non-Terminal
 
-  [(eval (expr_1 expr  ...) s (value_1 value ...))
-   (parse ctx () p_1 s s_1 ctx)
+  [;(eval (expr  ...) s (value ...))
+   (parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) () p_1 s s_1 ctx_1)
    ------------------------------------"Non-terminal"
-   (parse ctx ((x_3 p_3) (x_1 p_1) (x_2 p_2)...) (x_1 (expr_1 expr ...) (value_1 value...)) s s_1 ctx)]
+   (parse ctx
+          ((_ _ _ _)... (x_1 (x_2 ...) (expr_1 ...) p_1) (_ _ _ _)...)
+          (x_1 (expr ...) (x_3 ...)) s s_1 ctx_1)]
 
   ;Update
 
@@ -99,7 +98,14 @@
 (define-metafunction val-AttributePeg
   evalList : ctx (expr ...) -> (value ...)
   [(evalList ctx ()) ()]
-  [(evalList ctx (expr_1 expr ...)) ,(append (judgment-holds (eval ctx expr_1 value) value) (term (evalList ctx (expr ...))))])
+  [(evalList ctx (expr_1 expr ...))
+   ,(cons (car (judgment-holds (eval ctx expr_1 value) value)) (term (evalList ctx (expr ...))))])
+
+(define-metafunction val-AttributePeg
+  make-ctx : (x ...) (value ...) -> ((x value) ...)
+  [(make-ctx () ()) ()]
+  [(make-ctx (x_1 x ...) (value_1 value ...))
+   ,(cons (term (x_1 value_1)) (term (make-ctx (x ...) (value ...))))])
 
 (define-metafunction val-AttributePeg
   [(dismatch? natural_1 natural_1) #f]
@@ -160,8 +166,19 @@
 ;(judgment-holds (parse () () (/ (• 1 2) (! 3)) (1 2 3) r ctx) r)
 ;(judgment-holds (parse () () (/ (• 1 2) (! 3)) (4) r ctx) r)
 
+(judgment-holds
+ (parse ()
+        ((S (k) ((+ n 1)) (• ((← n k)) (* (• 1 ((← n (+ n 1)))) ) ) ) )
+        (S (0) (m))
+        (1 1 1)
+        s ctx)
+ (s ctx))
+
+;(• ((← n k)) (* (• 1 ((← n (+ n 1)))) ) )
 ; evalList Metafunction tests
-(println "evalList tests")
-(term (evalList () (1 2)))
-(term (evalList () ((- 1 1) (+ 1 2))))
-(term (evalList () ((+ (+ 1 3) (* 1 5)) (* 1 2) (+ 1 2))))
+;(println "evalList tests")
+;(term (evalList () (1 2)))
+;(term (evalList () ((- 1 1) (+ 1 2))))
+;(term (evalList () ((+ (+ 1 3) (* 1 5)) (* 1 2) (+ 1 2) (* 7 2))))
+
+;(term (make-ctx (S T) (1 2)))
