@@ -99,8 +99,7 @@
 (define-metafunction val-AttributePeg
   evalList : ctx (expr ...) -> (value ...)
   [(evalList ctx ()) ()]
- ; [(evalList ctx (expr_1 expr ...)) (evalList (expr_1...) (expr ...))]
-  [(evalList ctx (expr_1 expr ...)) ,(judgment-holds (eval ctx expr_1 value) value)])
+  [(evalList ctx (expr_1 expr ...)) ,(append (judgment-holds (eval ctx expr_1 value) value) (term (evalList ctx (expr ...))))])
 
 (define-metafunction val-AttributePeg
   [(dismatch? natural_1 natural_1) #f]
@@ -145,15 +144,15 @@
 ;
 
 ;UPDATE
-(judgment-holds (parse ((x 1) (y 2)) () ((← x 3)) (1 1 1) s ctx) ctx)
-(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ 1 2))) (1 1 1) s ctx) (s ctx))
-(judgment-holds (parse ((x 1) (y 2)) () ((← x (* 1 2))) (1 1 1) s ctx) (s ctx))
-(judgment-holds (parse ((x 1) (y 2)) () ((← x (÷ 1 2))) (1 1 1) s ctx) (s ctx)) 
-(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) 2))) (1 1 1) s ctx) (s ctx))
-(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) (- 1 6)))) (1 1 1) s ctx) (s ctx))
-(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) (- 1 6))) (← y (+ (+ 1 2) (- 1 6)))) (1 1 1) s ctx) (s ctx)) ;; nao funciona
-(judgment-holds (parse ((x 1) (y 2)) () ((← y (+ 5 2))) (1 1 1) s ctx) (s ctx)) ;; nao funciona
-(judgment-holds (parse ((x 1) (y 2)) () ((← z (+ 2 2)) (← a (+ 2 2)) (← z (+ 2 3))) (1 1 1) s ctx) (s ctx)) ;; nao sei se eh pra ter esse comportamento
+;(judgment-holds (parse ((x 1) (y 2)) () ((← x 3)) (1 1 1) s ctx) ctx)
+;(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ 1 2))) (1 1 1) s ctx) (s ctx))
+;(judgment-holds (parse ((x 1) (y 2)) () ((← x (* 1 2))) (1 1 1) s ctx) (s ctx))
+;(judgment-holds (parse ((x 1) (y 2)) () ((← x (÷ 1 2))) (1 1 1) s ctx) (s ctx)) 
+;(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) 2))) (1 1 1) s ctx) (s ctx))
+;(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) (- 1 6)))) (1 1 1) s ctx) (s ctx))
+;(judgment-holds (parse ((x 1) (y 2)) () ((← x (+ (+ 1 2) (- 1 6))) (← y (+ (+ 1 2) (- 1 6)))) (1 1 1) s ctx) (s ctx)) ;; nao funciona
+;(judgment-holds (parse ((x 1) (y 2)) () ((← y (+ 5 2))) (1 1 1) s ctx) (s ctx)) ;; nao funciona
+;(judgment-holds (parse ((x 1) (y 2)) () ((← z (+ 2 2)) (← a (+ 2 2)) (← z (+ 2 3))) (1 1 1) s ctx) (s ctx)) ;; nao sei se eh pra ter esse comportamento
 
 ;;testar e estudar o artigo pra veer como vai fazer o terminal
 ;MIX
@@ -161,5 +160,8 @@
 ;(judgment-holds (parse () () (/ (• 1 2) (! 3)) (1 2 3) r ctx) r)
 ;(judgment-holds (parse () () (/ (• 1 2) (! 3)) (4) r ctx) r)
 
-
-
+; evalList Metafunction tests
+(println "evalList tests")
+(term (evalList () (1 2)))
+(term (evalList () ((- 1 1) (+ 1 2))))
+(term (evalList () ((+ (+ 1 3) (* 1 5)) (* 1 2) (+ 1 2))))
