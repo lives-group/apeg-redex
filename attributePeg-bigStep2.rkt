@@ -64,6 +64,9 @@
    (parse ctx G ε r r ctx)]
 
   ;Non-Terminal
+  ;; 1- lista (expr_1 ...) fazer o evalist com ctx_1 -> (value ...)
+  ;; 2- Atualizar o (x_3 ...) com a (value ...) -> ((x_3 value) ...)
+  ;; 3- Modificar o ctx com o zip do 2
 
   [;(eval (expr  ...) s (value ...))
    (parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) () p_1 s s_1 ctx_1)
@@ -168,7 +171,15 @@
 
 (judgment-holds
  (parse ()
-        ((S (k) ((+ n 1)) (• ((← n k)) (* (• 1 ((← n (+ n 1)))) ) ) ) )
+        ((S (k) ((+ n 1)) (• ((← n k)) (* (• 1 ((← n (+ n 1))))))))
+        (S (0) (m))
+        (1 1 1)
+        s ctx)
+ (s ctx))
+
+#;(judgment-holds
+ (parse ()
+        ((S (k) ((+ n 1)) (• ((← n k)) (* (• 1 ((← n (+ n 1))))))))
         (S (0) (m))
         (1 1 1)
         s ctx)
