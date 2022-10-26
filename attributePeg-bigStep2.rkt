@@ -70,10 +70,11 @@
 
   [;(eval (expr  ...) s (value ...))
    (parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) () p_1 s s_1 ctx_1)
+    (parse (make-ctx (x_3 ...) (evalList ctx_1 (expr_1 ...))) () s_1 s_1 s_2 ctx_2)
    ------------------------------------"Non-terminal"
    (parse ctx
           ((_ _ _ _)... (x_1 (x_2 ...) (expr_1 ...) p_1) (_ _ _ _)...)
-          (x_1 (expr ...) (x_3 ...)) s s_1 ctx_1)]
+          (x_1 (expr ...) (x_3 ...)) s s_2 ,(append (term ctx_1) (term ctx_2)))]
 
   ;Update
 
@@ -176,6 +177,8 @@
         (1 1 1)
         s ctx)
  (s ctx))
+
+
 
 #;(judgment-holds
  (parse ()
