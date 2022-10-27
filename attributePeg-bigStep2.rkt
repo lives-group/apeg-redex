@@ -70,11 +70,11 @@
 
   [;(eval (expr  ...) s (value ...))
    (parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) () p_1 s s_1 ctx_1)
-    (parse (make-ctx (x_3 ...) (evalList ctx_1 (expr_1 ...))) () s_1 s_1 s_2 ctx_2)
+    (parse ctx_1 () (make-ctx-update (x_3 ...) (evalList ctx_1 (expr_1 ...))) s_1 s_2 ctx_2)
    ------------------------------------"Non-terminal"
    (parse ctx
           ((_ _ _ _)... (x_1 (x_2 ...) (expr_1 ...) p_1) (_ _ _ _)...)
-          (x_1 (expr ...) (x_3 ...)) s s_2 ,(append (term ctx_1) (term ctx_2)))]
+          (x_1 (expr ...) (x_3 ...)) s s_2 ctx_2)]
 
   ;Update
 
@@ -104,6 +104,12 @@
   [(evalList ctx ()) ()]
   [(evalList ctx (expr_1 expr ...))
    ,(cons (car (judgment-holds (eval ctx expr_1 value) value)) (term (evalList ctx (expr ...))))])
+
+(define-metafunction val-AttributePeg
+  make-ctx-update : (x ...) (value ...) -> ((← x value) ...)
+  [(make-ctx-update () ()) ()]
+  [(make-ctx-update (x_1 x ...) (value_1 value ...))
+   ,(cons (term (← x_1 value_1)) (term (make-ctx-update (x ...) (value ...))))])
 
 (define-metafunction val-AttributePeg
   make-ctx : (x ...) (value ...) -> ((x value) ...)
