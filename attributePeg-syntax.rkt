@@ -15,7 +15,8 @@
    (! p)
    ε)
   (x variable-not-otherwise-mentioned)
-  (G ((x (x ...) (expr ...) p) ...)))
+  (G (NT ...))
+  (NT (x (x ...) (expr ...) p)))
 
 
 

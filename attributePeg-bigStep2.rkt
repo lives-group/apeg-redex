@@ -68,13 +68,14 @@
   ;; 2- Atualizar o (x_3 ...) com a (value ...) -> ((x_3 value) ...)
   ;; 3- Modificar o ctx com o zip do 2
 
-  [;(eval (expr  ...) s (value ...))
-   (parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) () p_1 s s_1 ctx_1)
-    (parse ctx_1 () (make-ctx-update (x_3 ...) (evalList ctx_1 (expr_1 ...))) s_1 s_2 ctx_2)
+  [(parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) 
+          (NT_1 ... (x_1 (x_2 ...) (expr_1 ...) p_1) NT_2 ...) p_1 s s_1 ctx_1)
+   (parse ctx (NT_1 ... (x_1 (x_2 ...) (expr_1 ...) p_1) NT_2 ...)
+          (make-ctx-update (x_3 ...) (evalList ctx_1 (expr_1 ...))) s_1 s_1 ctx_2)
    ------------------------------------"Non-terminal"
    (parse ctx
-          ((_ _ _ _)... (x_1 (x_2 ...) (expr_1 ...) p_1) (_ _ _ _)...)
-          (x_1 (expr ...) (x_3 ...)) s s_2 ctx_2)]
+          (NT_1 ... (x_1 (x_2 ...) (expr_1 ...) p_1) NT_2 ...)
+          (x_1 (expr ...) (x_3 ...)) s s_1 ctx_2)]
 
   ;Update
 
@@ -177,7 +178,7 @@
 ;(judgment-holds (parse () () (/ (• 1 2) (! 3)) (4) r ctx) r)
 
 (judgment-holds
- (parse ()
+ (parse ((k 9))
         ((S (k) ((+ n 1)) (• ((← n k)) (* (• 1 ((← n (+ n 1))))))))
         (S (0) (m))
         (1 1 1)
@@ -187,12 +188,12 @@
 
 
 #;(judgment-holds
- (parse ()
-        ((S (k) ((+ n 1)) (• ((← n k)) (* (• 1 ((← n (+ n 1))))))))
-        (S (0) (m))
-        (1 1 1)
-        s ctx)
- (s ctx))
+   (parse ()
+          ((S (k) ((+ n 1)) (• ((← n k)) (* (• 1 ((← n (+ n 1))))))))
+          (S (0) (m))
+          (1 1 1)
+          s ctx)
+   (s ctx))
 
 ;(• ((← n k)) (* (• 1 ((← n (+ n 1)))) ) )
 ; evalList Metafunction tests
