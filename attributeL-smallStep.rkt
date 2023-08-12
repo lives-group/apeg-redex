@@ -14,6 +14,15 @@
      (-  value H)
      (÷  H expr)
      (÷  value H)
+     (&&  H expr)
+     (&&  value H)
+     (||  H expr)
+     (||  value H)
+     (! H)
+     (==  H expr)
+     (==  value H)
+     (>  H expr)
+     (>  value H)
      (get H expr)
      (get value H)
      (put H expr expr)
@@ -36,81 +45,84 @@
 (define expr-red
   (reduction-relation ctx-AttributeL
   #:domain VS
-   (--> ((in-hole H   (+  number_1        number_2)       ) ctx)
-        ((in-hole H  ,(+ (term number_1) (term number_2)) ) ctx)
-        "add1")
-   (--> ((in-hole H   x)     ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
-        ((in-hole H   value ) ( (x_1 value_1)... (x value) (x_2 value_2)... ) )
-        "var")
-   (--> ((in-hole H   (*  number_1        number_2)       ) ctx)
-        ((in-hole H  ,(* (term number_1) (term number_2)) ) ctx)
-        "mult1")
-   (--> ((in-hole H   (-  number_1        number_2)       ) ctx)
-        ((in-hole H  ,(- (term number_1) (term number_2)) ) ctx)
-        "sub1")
-   (--> ((in-hole H   (÷ number_1        number_2)       ) ctx)
-        ((in-hole H  ,(/ (term number_1) (term number_2)) ) ctx)
-        "div1")
-   (--> ((in-hole H  (get  (⇒ ((string_1 value_1)... (string_2 value_2) (string_3 value_3)...))        string_2)      )  ctx)
-        ((in-hole H (map-get ((string_1 value_1)... (string_2 value_2) (string_3 value_3)...) string_2)) ctx)
+   (--> ((in-hole H (+ number_1 number_2)) ctx)
+        ((in-hole H ,(+ (term number_1) (term number_2))) ctx)
+        "addition")
+   
+   (--> ((in-hole H x) ((x_1 value_1)... (x value) (x_2 value_2)... ))
+        ((in-hole H value) ((x_1 value_1)... (x value) (x_2 value_2)... ))
+        "variable")
+   
+   (--> ((in-hole H (* number_1 number_2)) ctx)
+        ((in-hole H ,(* (term number_1) (term number_2))) ctx)
+        "multiplication")
+   
+   (--> ((in-hole H (- number_1 number_2)) ctx)
+        ((in-hole H ,(- (term number_1) (term number_2))) ctx)
+        "subtraction")
+   
+   (--> ((in-hole H (÷ number_1 number_2)) ctx)
+        ((in-hole H ,(/ (term number_1) (term number_2))) ctx)
+        "division")
+
+   (--> ((in-hole H (&& boolean_1 boolean_2)) ctx)
+        ((in-hole H ,(and (term boolean_1) (term boolean_2))) ctx)
+        "and") ;added
+
+   (--> ((in-hole H (|| boolean_1 boolean_2)) ctx)
+        ((in-hole H ,(or (term boolean_1) (term boolean_2))) ctx)
+        "or") ;added
+
+   (--> ((in-hole H (! boolean)) ctx)
+        ((in-hole H ,(not (term boolean))) ctx)
+        "not") ;added
+
+   (--> ((in-hole H (== number_1 number_2)) ctx)
+        ((in-hole H ,(= (term number_1) (term number_2))) ctx)
+        "equality") ;added
+
+   (--> ((in-hole H (> number_1 number_2)) ctx)
+        ((in-hole H ,(> (term number_1) (term number_2))) ctx)
+        "bigger-then") ;added
+   
+   (--> ((in-hole H (get (⇒ ((string value)...)) string_key)) ctx)
+        ((in-hole H (mapping-get (⇒ ((string value)...)) string_key)) ctx)
         "get")
-   (--> ((in-hole H (put (⇒ ((string_1 value_1)...)) string value)) ctx)
-        ((in-hole H (⇒ ((string value) (string_1 value_1)...))) ctx)
+   
+   (--> ((in-hole H (put (⇒ ((string value)...)) string_key value_value)) ctx)
+        ((in-hole H (mapping-put (⇒ ((string value)...)) string_key value_value)) ctx)
         "put")
-   (--> ((in-hole H (head (: value_1 value_2)))       ctx)
-        ((in-hole H value_1)    ctx)
+   
+   (--> ((in-hole H (head (: value_1 value_2))) ctx)
+        ((in-hole H value_1) ctx)
         "head")
-   (--> ((in-hole H (tail (: value_1 value_2)))       ctx)
-        ((in-hole H value_2)    ctx)
-        "tail") ))
-
-;(traces expr-red (term ((* 1 2) () ) ) )
-;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
-;(judgment-holds (eval ((x 3)) (+ (* x 7) (÷ x 3)) value) value)
-;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* y 3)) value) value)
-;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* t 3)) value) value)
-
-#;(traces expr-red (term ( Z ((X 10) (Y 20)))) )
-#;(apply-reduction-relation* expr-red (term ((+ 1 2) () ) ) )
-#;(traces expr-red (term ((+ 2 (+ 1 2)) ()) )) 
-#;(traces expr-red (term ((+ (+ 1 1) 2) ())) )
-#;(apply-reduction-relation* expr-red (term ((+ (+ X 1) 2) ((X 10)))) )
-#;(traces expr-red (term ((+ (+ 2 4) (+ 1 2)) ()) ))
-#;(traces expr-red (term ((get (⇒ (("1" (+ 1 2)) ("2" (+ 0 1)))) "2") ())))
-#;(traces expr-red (term ((⇒ (("1" 1) ("2" (+ 1 2)))) ())))
-#;(traces expr-red (term ((put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) ())))
-#;(traces expr-red (term ((get (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) "C") ())))
-#;(traces expr-red (term ((: (+ 1 0) (: (+ 2 3) nil)) ()) ))
-#;(traces expr-red (term ((head (: (+ 1 0) (: (+ 2 3) nil))) ()) ))
-#;(traces expr-red (term ((tail (: (+ 1 0) (: (+ 2 3) nil))) ()) ))
-
-; The so-precious in-hole examaples ! 
-;
-#;(redex-match ctx-AttributeL (in-hole H (+ number_1 number_2)) (term (+ 5 (+ 1 (+ 2 3))) ) )
-#;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 1 (+ 2 3)) 5) ) )
-#;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 2 4) (+ 1 2)) ) ) 
-
-
+   
+   (--> ((in-hole H (tail (: value_1 value_2))) ctx)
+        ((in-hole H value_2) ctx)
+        "tail")
+   
+   (--> ((in-hole H (⇒ ((string value)...))) ctx)
+        ((in-hole H (mapping (⇒ ((string value)...)))) ctx)
+        (side-condition (term (has-duplicates (⇒ ((string value)...)))))
+        "mapping")))
 
 (define-metafunction ctx-AttributeL
-    map-get : ((string value)...) string -> value
-  [(map-get () string) undef]
-  [(map-get ((string value) (string_1 value_1)...) string) value]
-  [(map-get ((string value) (string_1 value_1)...) string_2) (map-get ((string_1 value_1)...) string_2)])
+  mapping : (⇒ ((string value)...)) -> (⇒ ((string value)...))
+  [(mapping (⇒ ((string value)... (string_key value_value)))) (mapping-put (mapping (⇒ ((string value)...))) string_key value_value)]
+  [(mapping (⇒ ())) (⇒ ())])
 
 (define-metafunction ctx-AttributeL
-    update_val : x value ctx -> ctx 
-  [(update_val x value ()) ((x value))]
-  [(update_val x value ((x value_2) (x_1 value_1)...) ) ((x value) (x_1 value_1)...)]
-  [(update_val x value ((x_1 value_1) (x_2 value_2)...) ) ((x_1 value_1) (look x ((x_2 value_2) ...)))])
+  mapping-put : (⇒ ((string value)...)) string value -> (⇒ ((string value)...))
+  [(mapping-put (⇒ ((string_before value_before)... (string_key value) (string_after value_after)...)) string_key value_value)
+   (⇒ ((string_before value_before)... (string_key value_value) (string_after value_after)...))]
+  [(mapping-put (⇒ ((string value)...)) string_key value_value) (⇒ ((string value)... (string_key value_value)))])
 
+(define-metafunction ctx-AttributeL
+  mapping-get : (⇒ ((string value)...)) string -> value
+  [(mapping-get (⇒ ((string_before value_before)... (string_key value) (string_after value_after)...)) string_key) value])
 
-;(traces apeg-red (term ( ((← A 1)) ((A 234)) ("a" 0 ()) indef) ))
-;(traces apeg-red (term ( ((← A (+ 1 A))) ((A 234)) ("a" 0 ()) indef) ))
-;(apply-reduction-relation* expr-red (term (  (+ 1 A)  ((A 234)) )  ))
-
-;organizar o repo
-;separar em duas linguagens
-;trazer a sintaxe de peg pra cá
-;attrPeg - Peg
-;ler o artigo http://www.llp.dcc.ufmg.br/Publications/Journal2014/2014-scp-leonardo-formal-apeg.pdf
+(define-metafunction ctx-AttributeL
+  has-duplicates : (⇒ ((string value)...)) -> boolean
+  [(has-duplicates (⇒ ((string_before value_before)... (string_key value) (string_after value_after)... (string_key value_value)))) #t]
+  [(has-duplicates (⇒ ((string value)... (string_key value_value)))) (has-duplicates (⇒ ((string value)...)))]
+  [(has-duplicates (⇒ ())) #f])

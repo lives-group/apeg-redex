@@ -1,0 +1,296 @@
+#lang racket
+(require redex
+         "../attributeL-bigStep.rkt")
+
+
+(printf "\nBASIC VALUES\n\n")
+
+
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () #t value) value))
+(printf "expected: (123),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () 123 value) value))
+(printf "expected: (string),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () "string" value) value))
+(printf "expected: ((⇒ ((map1 1) (map2 2) (map3 3)))),\tobtained: ~a\n"	(judgment-holds (eval () (⇒ (("map1" 1) ("map2" 2) ("map3" 3))) value) value))
+(printf "expected: ((: 1 2)),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (: 1 2) value) value))
+(printf "expected: (nil), \t\t\t\tobtained: ~a\n"			(judgment-holds (eval () nil value) value))
+
+
+(printf "\nBINARY OPERATIONS\n\n")
+
+
+(printf "expected: (7),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (+ 3 4) value) value))
+(printf "expected: (7.14159),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (+ 3.14159 4) value) value))
+(printf "expected: (4),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (- 7 3) value) value))
+(printf "expected: (3.85841),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (- 7 3.14159) value) value))
+(printf "expected: (21),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (* 7 3) value) value))
+(printf "expected: (21.99113),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (* 7 3.14159) value) value))
+(printf "expected: (7/3),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (÷ 14 6) value) value))
+(printf "expected: (2.2281710853421357),\t\t\tobtained: ~a\n"		(judgment-holds (eval () (÷ 7 3.14159) value) value))
+
+(printf "\nMANIPULATION OF BOOLEANS\n\n")
+
+
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (&& #t #t) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (&& #t #f) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (&& #f #f) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (&& #f #t) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (|| #t #t) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (|| #t #f) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (|| #f #f) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (|| #f #t) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (! #f) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (! #t) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 0 1) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 32 32) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 64 64.0) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (> 3 4.5) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (> 3 3) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (> 4.5 3) value) value))
+
+
+(printf "\nMANIPULATION OF LISTS\n\n")
+
+
+(printf "expected: ((: 3 nil)),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (: 3 nil) value) value))
+(printf "expected: (3),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (head (: 3 nil)) value) value))
+(printf "expected: (nil),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (head (: nil 3)) value) value))
+(printf "expected: (),\t\t\t\t\tobtained: ~a\n"				(judgment-holds (eval () (head nil) value) value))
+(printf "expected: (nil),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (tail (: 3 nil)) value) value))
+(printf "expected: (3),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (tail (: nil 3)) value) value))
+(printf "expected: (),\t\t\t\t\tobtained: ~a\n"				(judgment-holds (eval () (tail nil) value) value))
+(printf "expected: ((: 30 120)),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (: 30 120) value) value))
+(printf "expected: (30),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (head (: 30 120)) value) value))
+(printf "expected: (30),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x 30)) (head (: x 120)) value) value))
+(printf "expected: (120),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (tail (: 30 120)) value) value))
+(printf "expected: (120),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x 120)) (tail (: 30 x)) value) value))
+
+
+(printf "\nMAPPING HANDLING\n\n")
+
+
+(printf "expected: ((⇒ ())),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (⇒ ()) value) value))
+(printf "expected: ((⇒ ((k1 2)))),\t\t\tobtained: ~a\n"			(judgment-holds (eval () (⇒ (("k1" 1) ("k1" 2))) value) value))
+(printf "expected: ((⇒ ((key 1)))),\t\t\tobtained: ~a\n"		(judgment-holds (eval () (⇒ (("key" 1))) value) value))
+(printf "expected: ((⇒ ((key 12)))),\t\t\tobtained: ~a\n"		(judgment-holds (eval () (⇒ (("key" (* 3 4)))) value) value))
+(printf "expected: ((⇒ ((key 12)))),\t\t\tobtained: ~a\n"		(judgment-holds (eval () (put (⇒ ()) "key" (* 3 4)) value) value))
+(printf "expected: ((⇒ ((key 12)))),\t\t\tobtained: ~a\n"		(judgment-holds (eval () (put (⇒ (("key" 15))) "key" (* 3 4)) value) value))
+(printf "expected: ((⇒ ((k1 2) (k2 2)))),\t\tobtained: ~a\n"		(judgment-holds (eval () (put (⇒ (("k1" 1) ("k2" 2))) "k1" 2) value) value))
+(printf "expected: ((⇒ ((k1 1) (k2 1)))),\t\tobtained: ~a\n"		(judgment-holds (eval () (put (⇒ (("k1" 1) ("k2" 2))) "k2" 1) value) value))
+(printf "expected: ((⇒ ((key 12)))),\t\t\tobtained: ~a\n"		(judgment-holds (eval ((x "key")) (put (⇒ ()) x (* 3 4)) value) value))
+(printf "expected: ((⇒ ((key 12)))),\t\t\tobtained: ~a\n"		(judgment-holds (eval ((x 12)) (put (⇒ ()) "key" x) value) value))
+(printf "expected: (12),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (get (⇒ (("key" (* 3 4)))) "key") value) value))
+(printf "expected: (12),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x "key")) (get (⇒ (("key" (* 3 4)))) x) value) value))
+(printf "expected: (12),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x "key")) (get (⇒ ((x (* 3 4)))) "key") value) value))
+(printf "expected: (12),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x 12)) (get (⇒ (("key" x))) "key") value) value))
+
+
+(printf "\nVARIABLES LINKED TO NUMBERS\n\n")
+
+
+(printf "expected: (3),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 2) (x1 1)) (+ x0 x1) value) value))
+(printf "expected: (3.718281828),\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 2.718281828) (x1 1)) (+ x0 x1) value) value))
+(printf "expected: (8),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 7)) (- x0 x1) value) value))
+(printf "expected: (12.281718172),\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 2.718281828)) (- x0 x1) value) value))
+(printf "expected: (105),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 7)) (* x0 x1) value) value))
+(printf "expected: (40.774227419999995),\t\t\tobtained: ~a\n"		(judgment-holds (eval ((x0 15) (x1 2.718281828)) (* x0 x1) value) value))
+(printf "expected: (15/7),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 30) (x1 14)) (÷ x0 x1) value) value))
+(printf "expected: (5.5181916185035105),\t\t\tobtained: ~a\n"		(judgment-holds (eval ((x0 15) (x1 2.718281828)) (÷ x0 x1) value) value))
+
+
+(printf "\nVARIABLES LINKED TO LISTS\n\n")
+
+
+(printf "expected: ((: 127 128)),\t\t\tobtained: ~a\n"			(judgment-holds (eval ((y (: 127 128))) y value) value))
+(printf "expected: (127),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (head (: 127 128)) value) value))
+(printf "expected: (127),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((y (: 127 128))) (head y) value) value))
+(printf "expected: (128),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (tail (: 127 128)) value) value))
+(printf "expected: (128),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((y (: 127 128))) (tail y) value) value))
+
+
+(printf "\nVARIABLES LINKED TO MAPPING\n\n")
+
+
+(printf "expected: ((⇒ ((key 1)))),\t\t\tobtained: ~a\n"		(judgment-holds (eval ((x (⇒ (("key" 1))))) x value) value))
+(printf "expected: ((⇒ ((key 12)))),\t\t\tobtained: ~a\n"		(judgment-holds (eval ((x (⇒ ()))) (put x "key" (* 3 4)) value) value))
+(printf "expected: (12),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x (⇒ (("key" 12))))) (get x "key") value) value))
+
+
+(test-equal (judgment-holds (eval () #t value) value)
+            '(#t))
+(test-equal (judgment-holds (eval () 123 value) value)
+            '(123))
+(test-equal (judgment-holds (eval () "string" value) value)
+            '("string"))
+(test-equal (judgment-holds (eval () (⇒ (("map1" 1) ("map2" 2) ("map3" 3))) value) value)
+            '((⇒ (("map1" 1) ("map2" 2) ("map3" 3)))))
+(test-equal (judgment-holds (eval () (: 1 2) value) value)
+            '((: 1 2)))
+(test-equal (judgment-holds (eval () nil value) value)
+            '(nil))
+
+
+(test-equal (judgment-holds (eval () (+ 3 4) value) value)
+            '(7))
+(test-equal (judgment-holds (eval () (+ 3.14159 4) value) value)
+            '(7.14159))
+(test-equal (judgment-holds (eval () (- 7 3) value) value)
+            '(4))
+(test-equal (judgment-holds (eval () (- 7 3.14159) value) value)
+            '(3.85841))
+(test-equal (judgment-holds (eval () (* 7 3) value) value)
+            '(21))
+(test-equal (judgment-holds (eval () (* 7 3.14159) value) value)
+            '(21.99113))
+(test-equal (judgment-holds (eval () (÷ 14 6) value) value)
+            '(7/3))
+(test-equal (judgment-holds (eval () (÷ 7 3.14159) value) value)
+            '(2.2281710853421357))
+
+
+
+(test-equal (judgment-holds (eval () (&& #t #t) value) value)
+            '(#t))
+(test-equal (judgment-holds (eval () (&& #t #f) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (&& #f #f) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (&& #f #t) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (|| #t #t) value) value)
+            '(#t))
+(test-equal (judgment-holds (eval () (|| #t #f) value) value)
+            '(#t))
+(test-equal (judgment-holds (eval () (|| #f #f) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (|| #f #t) value) value)
+            '(#t))
+(test-equal (judgment-holds (eval () (! #f) value) value)
+            '(#t))
+(test-equal (judgment-holds (eval () (! #t) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (== 0 1) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (== 32 32) value) value)
+            '(#t))
+(test-equal (judgment-holds (eval () (== 64 64.0) value) value)
+            '(#t))
+(test-equal (judgment-holds (eval () (> 3 4.5) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (> 3 3) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (> 4.5 3) value) value)
+            '(#t))
+
+
+(test-equal (judgment-holds (eval () (: 3 nil) value) value)
+            '((: 3 nil)))
+(test-equal (judgment-holds (eval () (head (: 3 nil)) value) value)
+            '(3))
+(test-equal (judgment-holds (eval () (head (: nil 3)) value) value)
+            '(nil))
+(test-equal (judgment-holds (eval () (head nil) value) value)
+            '())
+(test-equal (judgment-holds (eval () (tail (: 3 nil)) value) value)
+            '(nil))
+(test-equal (judgment-holds (eval () (tail (: nil 3)) value) value)
+            '(3))
+(test-equal (judgment-holds (eval () (tail nil) value) value)
+            '())
+(test-equal (judgment-holds (eval () (: 30 120) value) value)
+            '((: 30 120)))
+(test-equal (judgment-holds (eval () (head (: 30 120)) value) value)
+            '(30))
+(test-equal (judgment-holds (eval ((x 30)) (head (: x 120)) value) value)
+            '(30))
+(test-equal (judgment-holds (eval () (tail (: 30 120)) value) value)
+            '(120))
+(test-equal (judgment-holds (eval ((x 120)) (tail (: 30 x)) value) value)
+            '(120))
+
+
+(test-equal (judgment-holds (eval () (⇒ ()) value) value)
+            '((⇒ ())))
+(test-equal (judgment-holds (eval () (⇒ (("k1" 1) ("k1" 2))) value) value)
+            '((⇒ (("k1" 2)))))
+(test-equal (judgment-holds (eval () (⇒ (("key" 1))) value) value)
+            '((⇒ (("key" 1)))))
+(test-equal (judgment-holds (eval () (⇒ (("key" (* 3 4)))) value) value)
+            '((⇒ (("key" 12)))))
+(test-equal (judgment-holds (eval () (put (⇒ ()) "key" (* 3 4)) value) value)
+            '((⇒ (("key" 12)))))
+(test-equal (judgment-holds (eval () (put (⇒ (("key" 15))) "key" (* 3 4)) value) value)
+            '((⇒ (("key" 12)))))
+(test-equal (judgment-holds (eval () (put (⇒ (("k1" 1) ("k2" 2))) "k1" 2) value) value)
+            '((⇒ (("k1" 2) ("k2" 2)))))
+(test-equal (judgment-holds (eval () (put (⇒ (("k1" 1) ("k2" 2))) "k2" 1) value) value)
+            '((⇒ (("k1" 1) ("k2" 1)))))
+(test-equal (judgment-holds (eval ((x "key")) (put (⇒ ()) x (* 3 4)) value) value)
+            '((⇒ (("key" 12)))))
+(test-equal (judgment-holds (eval ((x 12)) (put (⇒ ()) "key" x) value) value)
+            '((⇒ (("key" 12)))))
+(test-equal (judgment-holds (eval () (get (⇒ (("key" (* 3 4)))) "key") value) value)
+            '(12))
+(test-equal (judgment-holds (eval ((x "key")) (get (⇒ (("key" (* 3 4)))) x) value) value)
+            '(12))
+(test-equal (judgment-holds (eval ((x "key")) (get (⇒ ((x (* 3 4)))) "key") value) value)
+            '(12))
+(test-equal (judgment-holds (eval ((x 12)) (get (⇒ (("key" x))) "key") value) value)
+            '(12))
+
+
+(test-equal (judgment-holds (eval ((x0 2) (x1 1)) (+ x0 x1) value) value)
+            '(3))
+(test-equal (judgment-holds (eval ((x0 2.718281828) (x1 1)) (+ x0 x1) value) value)
+            '(3.718281828))
+(test-equal (judgment-holds (eval ((x0 15) (x1 7)) (- x0 x1) value) value)
+            '(8))
+(test-equal (judgment-holds (eval ((x0 15) (x1 2.718281828)) (- x0 x1) value) value)
+            '(12.281718172))
+(test-equal (judgment-holds (eval ((x0 15) (x1 7)) (* x0 x1) value) value)
+            '(105))
+(test-equal (judgment-holds (eval ((x0 15) (x1 2.718281828)) (* x0 x1) value) value)
+            '(40.774227419999995))
+(test-equal (judgment-holds (eval ((x0 30) (x1 14)) (÷ x0 x1) value) value)
+            '(15/7))
+(test-equal (judgment-holds (eval ((x0 15) (x1 2.718281828)) (÷ x0 x1) value) value)
+            '(5.5181916185035101))
+
+
+(test-equal (judgment-holds (eval ((y (: 127 128))) y value) value)
+            '((: 127 128)))
+(test-equal (judgment-holds (eval () (head (: 127 128)) value) value)
+            '(127))
+(test-equal (judgment-holds (eval ((y (: 127 128))) (head y) value) value)
+            '(127))
+(test-equal (judgment-holds (eval () (tail (: 127 128)) value) value)
+            '(128))
+(test-equal (judgment-holds (eval ((y (: 127 128))) (tail y) value) value)
+            '(128))
+
+
+(test-equal (judgment-holds (eval ((x (⇒ (("key" 1))))) x value) value)
+            '((⇒ (("key" 1)))))
+(test-equal (judgment-holds (eval ((x (⇒ ()))) (put x "key" (* 3 4)) value) value)
+            '((⇒ (("key" 12)))))
+(test-equal (judgment-holds (eval ((x (⇒ (("key" 12))))) (get x "key") value) value)
+            '(12))
+
+
+(test-results)
+
+
+#|
+ERROS ENCONTRADOS
+Listas e o terminal "nil" não são tratados:
+        judgment						result
+	(judgment-holds (eval () (: 1 2) value) value))		'()
+	(judgment-holds (eval () nil value) value))		'()
+
+A implementação de extensão de mapeamento "(put exp1 exp2 exp3)" presume que "exp2" é uma string, o que leva ao seguinte erro:
+        judgment								result
+        (judgment-holds (eval ((x "key")) (put (⇒ ()) x (* 3 4)) value) value)	'()
+
+A implementação de head e tail de listas não atua sobre variáveis
+        judgment								result
+        (judgment-holds (eval ((y (: 127 128))) (head y) value) value))		'()
+	(judgment-holds (eval ((y (: 127 128))) (tail y) value) value))		'()
+|#

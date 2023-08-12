@@ -6,139 +6,106 @@
 (define-judgment-form val-AttributeL
   #:mode (eval I I O)
   #:contract (eval ctx expr value)
+
+  [-------------------------- boolean ;added
+   (eval ctx boolean boolean)]
   
-  [-------------------------------- 
+  [------------------------ number
    (eval ctx number number)]
 
-  [-------------------------------- 
+  [------------------------ string
    (eval ctx string string)]
 
-  [
-   -------------------------------- 
+  [-------------------------------------------- variable
    (eval ((_ _)... (x value) (_ _)...) x value)]
 
   [(eval ctx expr_1 number_1)
    (eval ctx expr_2 number_2)
-   ------------------------------------
+   ----------------------------------------------------------------- addition
    (eval ctx (+ expr_1 expr_2) ,(+ (term number_1) (term number_2)))]
 
   [(eval ctx expr_1 number_1)
    (eval ctx expr_2 number_2)
-   ------------------------------------
+   ----------------------------------------------------------------- multiplication
    (eval ctx (* expr_1 expr_2) ,(* (term number_1) (term number_2)))]
 
   [(eval ctx expr_1 number_1)
    (eval ctx expr_2 number_2)
-   ------------------------------------
+   ----------------------------------------------------------------- subtraction
    (eval ctx (- expr_1 expr_2) ,(- (term number_1) (term number_2)))]
 
   [(eval ctx expr_1 number_1)
    (eval ctx expr_2 number_2)
-   ------------------------------------
+   ----------------------------------------------------------------- division
    (eval ctx (÷ expr_1 expr_2) ,(/ (term number_1) (term number_2)))]
 
+  [(eval ctx expr_1 boolean_1)
+   (eval ctx expr_2 boolean_2)
+   ---------------------------------------------------------------------- and ;added
+   (eval ctx (&& expr_1 expr_2) ,(and (term boolean_1) (term boolean_2)))]
+
+  [(eval ctx expr_1 boolean_1)
+   (eval ctx expr_2 boolean_2)
+   --------------------------------------------------------------------- or ;added
+   (eval ctx (|| expr_1 expr_2) ,(or (term boolean_1) (term boolean_2)))]
+
+  [(eval ctx expr boolean)
+   ----------------------------------------- not ;added
+   (eval ctx (! expr) ,(not (term boolean)))]
+
   [(eval ctx expr_1 number_1)
-   ------------------------------------
-   (eval ctx (head (: expr_1 _)) number_1)]
+   (eval ctx expr_2 number_2)
+   ------------------------------------------------------------------ equality ;added
+   (eval ctx (== expr_1 expr_2) ,(= (term number_1) (term number_2)))]
 
-  [(eval ctx expr_2 number)
-   ------------------------------------
-   (eval ctx (tail (: _ expr_2)) number)]
+  [(eval ctx expr_1 number_1)
+   (eval ctx expr_2 number_2)
+   ----------------------------------------------------------------- bigger-then ;added
+   (eval ctx (> expr_1 expr_2) ,(> (term number_1) (term number_2)))]
 
-  [(eval ctx expr_1 (⇒ ((string_1 value_1))))
-   (eval ctx expr_2 string_1)
-   ------------------------------------
-   (eval ctx (get expr_1 expr_2) value_1)]
+  [------------------ nil
+   (eval ctx nil nil)]
 
-  [
-   -------------------------------------------------"map-empty"
-   (eval ctx (⇒ () ) (⇒ () ))]
-  
+  [(eval ctx expr_1 value_1)
+   (eval ctx expr_2 value_2)
+   ---------------------------------------------- list
+   (eval ctx (: expr_1 expr_2) (: value_1 value_2))]
 
-  [(eval ctx expr_1 string_1)
-   (eval ctx expr_2 value_1)
-   (eval ctx (⇒ ((expr_3 expr_4)...)) (⇒((value_3 value_4)...)))
-   -------------------------------------------------"map-mult"
-   (eval ctx (⇒ ((expr_1 expr_2) (expr_3 expr_4)...) ) (⇒ ((string_1 value_1) (value_3 value_4)...) ))]
-   
-  #;[ (eval ctx expr_1 string)
-      (eval ctx expr_2 value)
-      ------------------------------------"map-one"
-      (eval ctx (⇒ ((expr_1 expr_2))) (⇒ ((string value))))]
+  [(eval ctx expr (: value_head _))
+   --------------------------------- head
+   (eval ctx (head expr) value_head)]
 
+  [(eval ctx expr (: _ value_tail))
+   --------------------------------- tail
+   (eval ctx (tail expr) value_tail)]
+
+  [------------------------- empty-mapping
+   (eval ctx (⇒ ()) (⇒ ()))]
+
+  [(eval ctx (put (⇒ ((expr_keys expr_values)...)) expr_key expr_value) (⇒ ((string value)...)))
+   ----------------------------------------------------------------------------------------- multiple-mapping 
+   (eval ctx (⇒ ((expr_keys expr_values)... (expr_key expr_value))) (⇒ ((string value)...)))]
 
   [(eval ctx expr_2 string)
-   (eval ctx expr_1 (⇒ ((_ _)...  (string value) (_ _)...) ))
-   ----------------------------------------------- "get"
-   (eval ctx (get expr_1 expr_2) value )]
-   
-  #;[(eval ctx expr_2 value_2)
-   (eval ctx expr_1 (⇒ ((string_1 value_1)... ) )) ;;precisa verificar se ja existe a entrada?
-   -----------------------------------------"put"
-   (eval ctx (put expr_1 string expr_2) (⇒ ((string_1 value_1)... (string value_2))))]
+   (eval ctx expr_1 (⇒ ((_ _)... (string value) (_ _)...)))
+   ------------------------------------ get
+   (eval ctx (get expr_1 expr_2) value)]
 
-  [(eval ctx expr_2 value_2)
-   (eval ctx expr_1 (⇒ () )) 
-   -----------------------------------------"put-empty"
-   (eval ctx (put expr_1 string expr_2) (⇒ ((string value_2))))]
+  [(eval ctx expr_key string_key)
+   (eval ctx expr_value value_value)
+   (eval ctx expr_mapping (⇒ ((string_1 value_1)... (string_key value) (string_2 value_2)...)))
+   ---------------------------------------------------------------------------------------------------------------------------- replace-put
+   (eval ctx (put expr_mapping expr_key expr_value) (⇒ ((string_1 value_1)... (string_key value_value) (string_2 value_2)...)))]
 
-  [(eval ctx expr_2 value_1)
-   (eval ctx expr_1 (⇒ ((string_1 value_3) (string_2 value_4)... ) ))
-   -----------------------------------------"put-rec"
-   (eval ctx (put expr_1 string_1 expr_2) (⇒ ((string_1 value_1) (string_2 value_4)... ) ))]
-
-  [(eval ctx expr_1 (⇒ ((string_1 value_3) (string_2 value_4)... ) ))
-   (eval ctx (put (⇒ ((string_2 value_4)... )) string expr_2) (⇒ ((string_4 value_5)... )))
-   (side-condition (diff string string_1))
-   -----------------------------------------"put-rec2"
-   (eval ctx (put expr_1 string expr_2) (⇒ ((string_1 value_3) (string_4 value_5)... ) ))]
-
-  )
+  [(eval ctx expr_key string_key)
+   (eval ctx expr_value value_value)
+   (eval ctx expr_mapping (⇒ ((string value)...)))
+   (side-condition (without-occurrence (string value)... string_key))
+   -------------------------------------------------------------------------------------------------- append-put
+   (eval ctx (put expr_mapping expr_key expr_value) (⇒ ((string value)... (string_key value_value))))])
 
 (define-metafunction val-AttributeL
-  look : x ((x value) ...) -> value
-  [(look x ()) undef]
-  [(look x ((x value) (x_1 value_1)...) ) value]
-  [(look x ((x_1 value) (x_2 value_1)...) ) (look x ((x_2 value_1) ...)) ])
-
-
-(define-metafunction val-AttributeL
-  [(diff string_1 string_1) #f]
-  [(diff string_1 string_2) #t]) 
-
-
-;; am i testing this code or is it testing me?
-
-
-;(judgment-holds (eval () (⇒ (("1" 3) ("2" 1))) value) value)
-;(judgment-holds (eval () (⇒ (("1" 3))) value) value)
-;(judgment-holds (eval () (⇒ ()) value) value)
-
-;(judgment-holds (eval ((x 4) (y 2)) (head (: (+ x 3) 4)) value) value)
-;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) 4)) value) value)
-;(judgment-holds (eval ((x 4) (y 2)) (tail (: (+ x 3) (- x 3))) value) value)
-;(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "2") value) value)
-;(judgment-holds (eval () (get (⇒ (("1" 1) ("2" 2))) "1") value) value)
-;(judgment-holds (eval () (put (⇒ (("1" 1) ("2" (+ 1 2)))) "2" 1) value) value)
-
-;(traces expr-red (term ((* 1 2) () ) ) )
-;(judgment-holds (eval ((x 4)) (+ (* x 7) (* 1 3)) value) value)
-;(judgment-holds (eval ((x 3)) (+ (* x 7) (/ x 3)) value) value)
-;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* y 3)) value) value)
-;(judgment-holds (eval ((x 4) (y 2)) (+ (* x 7) (* t 3)) value) value)
-
-
-
-#;(traces expr-red (term ( Z ((X 10) (Y 20)))) )
-#;(traces expr-red (term ((+ 1 2) () ) ) )
-#;(traces expr-red (term ((+ 2 (+ 1 2)) ()) )) 
-#;(traces expr-red (term ((+ (+ 1 1) 2) ())) )
-#;(traces expr-red (term ((+ (+ X 1) 2) ((X 10)))) )
-#;(traces expr-red (term ((+ (+ 2 4) (+ 1 2)) ()) ))
-
-
-; The so-precious in-hole examaples ! 
-;
-#;(redex-match ctx-AttributeL (in-hole H (+ number_1 number_2)) (term (+ 5 (+ 1 (+ 2 3))) ) )
-#;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 1 (+ 2 3)) 5) ) )
-#;(redex-match ctx-AttributeL (in-hole H expr) (term ( + (+ 2 4) (+ 1 2)) ) ) 
+  without-occurrence : (string value)... string_key -> boolean
+  [(without-occurrence (string_key value_1) (string value)... string_key) #f]
+  [(without-occurrence (string_1 value_1) (string value)... string_key) (without-occurrence (string value)... string_key)]
+  [(without-occurrence string_key) #t])

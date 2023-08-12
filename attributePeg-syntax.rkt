@@ -4,10 +4,12 @@
 (require "attributeL-syntax.rkt")
 (provide (all-defined-out))
 
-(define-extended-language AttributePeg val-AttributeL ;; Peg syntax
+(define-extended-language AttributePeg val-AttributeL
   (p
-   (x (expr ...) (x ...)) ;; 1x -> nome do NT // Lista de expr ->parametros do NT // Lista de x -> nomes dos retornos
-   ((← x expr) ...) ;update ;;where x is a variable name and expr is an attribute expression, using F functions.
+   (x (expr ...) (x ...))
+   ((← x expr) ...)
+   ((= x p) ...) ;added
+   (? expr) ;added
    natural
    (• p p)
    (/ p p)
@@ -17,19 +19,6 @@
   (x variable-not-otherwise-mentioned)
   (G (NT ...))
   (NT (x (x ...) (expr ...) p)))
-
-
-
-#|
-S [int k] return n + 1 <- ((n <- k) ('a' (n <- n + 1))* )
-
-(
- (S
-  (k)
-  ((+ n 1))
-  (• ((← n k)) (* (• 1 ((← n (+ n 1)))) ) ))
- )
-|#
 
 (define-extended-language val-AttributePeg AttributePeg
   [P (p s)] 
