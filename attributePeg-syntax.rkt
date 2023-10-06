@@ -1,27 +1,27 @@
 #lang racket
 
-(require redex)
-(require "attributeL-syntax.rkt")
+(require redex
+         "attributeL-syntax.rkt")
 (provide (all-defined-out))
 
-(define-extended-language AttributePeg val-AttributeL
-  (p
-   (x (expr ...) (x ...))
+
+(define-extended-language AttributePeg val-AttributeLType
+  [p ::= (x (expr ...) (x ...))
    ((← x expr) ...)
-   ((= x p) ...) ;added
-   (? expr) ;added
-   natural
+   (= x p)
+   (? expr)
    (• p p)
    (/ p p)
    (* p)
    (! p)
-   ε)
-  (x variable-not-otherwise-mentioned)
-  (G (NT ...))
-  (NT (x (x ...) (expr ...) p)))
+   natural
+   ε]
+  [G ::= (NT ...)]
+  [NT ::= (x ((type x) ...) (expr ...) p)])
+
 
 (define-extended-language val-AttributePeg AttributePeg
-  [P (p s)] 
-  [s (natural ...)]
-  [r s
+  [P ::= (p s)] 
+  [s ::= (natural ...)]
+  [r ::= s
      ⊥])

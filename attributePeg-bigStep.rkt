@@ -69,34 +69,31 @@
 
   ;Constraint
   [(eval ctx expr #t)
-   ------------------------------ constraint-success ;added
+   ------------------------------ constraint-success
    (parse ctx G (? expr) s s ctx)]
   
   [(eval ctx expr #f)
-   ------------------------------ constraint-fail ;added
+   ------------------------------ constraint-fail
    (parse ctx G (? expr) s ⊥ ctx)]
   
   ;Bind
+  [(parse ctx G p (number_consumed ... number ...) (number ...) ctx_1)
+   ---------------------------------------------------------------------------------------------------------------------------------------------- bind-success ;added
+   (parse ctx G (= x p) (number_consumed ... number ...) (number ...) (bind-update ctx_1 x ,(string-join (map ~a (term (number_consumed ...))))))]
 
-  [(parse ctx G p (number_consumed ... number ...) (number ...) ctx_any)
-   (parse (bind-update ctx x ,(string-join (map ~a (term (number_consumed ...))))) G ((= x_rest p_rest) ...) (number_consumed ... number ...) s_1 ctx_1)
-   ---------------------------------------------------------------------------------------- bind-multiple-success ;added
-   (parse ctx G ((= x p) (= x_rest p_rest) ...) (number_consumed ... number ...) s_1 ctx_1)]
-
-  [(parse ctx G p s ⊥ ctx_any)
-   (parse (bind-remove ctx x) G ((= x_rest p_rest) ...) s s_1 ctx_1)
-   --------------------------------------------------------- bind-multiple-fail ;added
-   (parse ctx G ((= x p) (= x_rest p_rest) ...) s s_1 ctx_1)]
+  [(parse ctx G p s ⊥ ctx_1)
+   ----------------------------- bind-fail
+   (parse ctx G (= x p) s ⊥ ctx)]
 
   ;Non-terminal
-  [(parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) (NT_1 ... (x_1 (x_2 ...) (expr_1 ...) p_1) NT_2 ...) p_1 s s_1 ctx_1)
-   (parse ctx (NT_1 ... (x_1 (x_2 ...) (expr_1 ...) p_1) NT_2 ...) (make-ctx-update (x_3 ...) (evalList ctx_1 (expr_1 ...))) s_1 s_1 ctx_2)
+  [(parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) p_1 s s_1 ctx_1)
+   (parse ctx (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) (make-ctx-update (x_3 ...) (evalList ctx_1 (expr_1 ...))) s_1 s_1 ctx_2)
    ------------------------------------------------------------------------------------------------------- non-terminal-success
-   (parse ctx (NT_1 ... (x_1 (x_2 ...) (expr_1 ...) p_1) NT_2 ...) (x_1 (expr ...) (x_3 ...)) s s_1 ctx_2)]
+   (parse ctx (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) (x_1 (expr ...) (x_3 ...)) s s_1 ctx_2)]
   
-  [(parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) (NT_1 ... (x_1 (x_2 ...) (expr_1 ...) p_1) NT_2 ...) p_1 s ⊥ ctx_1)
+  [(parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) p_1 s ⊥ ctx_1)
    --------------------------------------------------------------------------------------------------- non-terminal-fail
-   (parse ctx (NT_1 ... (x_1 (x_2 ...) (expr_1 ...) p_1) NT_2 ...) (x_1 (expr ...) (x_3 ...)) s ⊥ ctx)]
+   (parse ctx (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) (x_1 (expr ...) (x_3 ...)) s ⊥ ctx)]
 
   ;Update
   [(eval ((x_1 value_1)... (x value_3) (x_2 value_2)...) expr value)
@@ -106,7 +103,6 @@
 
   [------------------------ update-empty
    (parse ctx G () s s ctx)]
-
 
   [(side-condition (insert? x_3 ((x_1 value_1)...)))
    (eval ((x_1 value_1)...) expr value)
@@ -149,12 +145,12 @@
   [(insert? x ((x value) (x_1 value_1)...) ) #f]
   [(insert? x ((x_1 value) (x_2 value_1)...) ) (insert? x ((x_2 value_1) ...)) ])
 
-(define-metafunction val-AttributePeg ;added
+(define-metafunction val-AttributePeg
   bind-update : ctx x value -> ctx
   [(bind-update ((x_1 value_1) ... (x value_any) (x_2 value_2) ...) x value) ((x_1 value_1) ... (x value) (x_2 value_2) ...)]
   [(bind-update ((x_1 value_1) ...) x value) ((x_1 value_1) ... (x value))])
 
-(define-metafunction val-AttributePeg ;added
+(define-metafunction val-AttributePeg
   bind-remove : ctx x -> ctx
   [(bind-remove ((x_1 value_1) ... (x value_any) (x_2 value_2) ...) x) ((x_1 value_1) ... (x_2 value_2) ...)]
   [(bind-remove ctx x) ctx])

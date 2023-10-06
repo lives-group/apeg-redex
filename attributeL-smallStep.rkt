@@ -18,7 +18,7 @@
      (&&  value H)
      (||  H expr)
      (||  value H)
-     (! H)
+     (¬ H)
      (==  H expr)
      (==  value H)
      (>  H expr)
@@ -61,19 +61,32 @@
         ((in-hole H ,(- (term number_1) (term number_2))) ctx)
         "subtraction")
    
-   (--> ((in-hole H (÷ number_1 number_2)) ctx)
-        ((in-hole H ,(/ (term number_1) (term number_2))) ctx)
-        "division")
+   (--> ((in-hole H (÷ integer_1 integer_2)) ctx)
+        ((in-hole H ,(quotient (term integer_1) (term integer_2))) ctx)
+        "division-integer") ;added
 
-   (--> ((in-hole H (&& boolean_1 boolean_2)) ctx)
-        ((in-hole H ,(and (term boolean_1) (term boolean_2))) ctx)
-        "and") ;added
+   (--> ((in-hole H (÷ real_1 real_2)) ctx)
+        ((in-hole H ,(/ (term real_1) (term real_2))) ctx)
+        (side-condition (not (or (exact-integer? (term real_1)) (exact-integer? (term real_2)))))
+        "division-real") ;modified
 
-   (--> ((in-hole H (|| boolean_1 boolean_2)) ctx)
-        ((in-hole H ,(or (term boolean_1) (term boolean_2))) ctx)
-        "or") ;added
+   (--> ((in-hole H (&& #t boolean)) ctx)
+        ((in-hole H boolean) ctx)
+        "and-first-success") ;added
 
-   (--> ((in-hole H (! boolean)) ctx)
+   (--> ((in-hole H (&& #f expr)) ctx)
+        ((in-hole H #f) ctx)
+        "and-first-fail") ;added
+
+   (--> ((in-hole H (|| #t expr)) ctx)
+        ((in-hole H #t) ctx)
+        "or-first-success") ;added
+
+   (--> ((in-hole H (|| #f boolean)) ctx)
+        ((in-hole H boolean) ctx)
+        "or-first-fail") ;added
+
+   (--> ((in-hole H (¬ boolean)) ctx)
         ((in-hole H ,(not (term boolean))) ctx)
         "not") ;added
 

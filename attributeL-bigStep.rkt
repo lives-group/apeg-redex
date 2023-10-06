@@ -7,7 +7,7 @@
   #:mode (eval I I O)
   #:contract (eval ctx expr value)
 
-  [-------------------------- boolean ;added
+  [-------------------------- boolean
    (eval ctx boolean boolean)]
   
   [------------------------ number
@@ -34,33 +34,47 @@
    ----------------------------------------------------------------- subtraction
    (eval ctx (- expr_1 expr_2) ,(- (term number_1) (term number_2)))]
 
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
-   ----------------------------------------------------------------- division
-   (eval ctx (÷ expr_1 expr_2) ,(/ (term number_1) (term number_2)))]
+  [(eval ctx expr_1 integer_1)
+   (eval ctx expr_2 integer_2)
+   -------------------------------------------------------------------------- division-integer ;added
+   (eval ctx (÷ expr_1 expr_2) ,(quotient (term integer_1) (term integer_2)))]
 
-  [(eval ctx expr_1 boolean_1)
-   (eval ctx expr_2 boolean_2)
-   ---------------------------------------------------------------------- and ;added
-   (eval ctx (&& expr_1 expr_2) ,(and (term boolean_1) (term boolean_2)))]
+  [(eval ctx expr_1 real_1)
+   (eval ctx expr_2 real_2)
+   (side-condition ,(not (or (exact-integer? (term real_1)) (exact-integer? (term real_2)))))
+   ------------------------------------------------------------- division-real ;modified
+   (eval ctx (÷ expr_1 expr_2) ,(/ (term real_1) (term real_2)))]
 
-  [(eval ctx expr_1 boolean_1)
-   (eval ctx expr_2 boolean_2)
-   --------------------------------------------------------------------- or ;added
-   (eval ctx (|| expr_1 expr_2) ,(or (term boolean_1) (term boolean_2)))]
+  [(eval ctx expr_1 #t)
+   (eval ctx expr_2 boolean)
+   ------------------------------------- and-first-success
+   (eval ctx (&& expr_1 expr_2) boolean)]
+  
+  [(eval ctx expr_1 #f)
+   -------------------------------- and-first-fail
+   (eval ctx (&& expr_1 expr_2) #f)]
+
+  [(eval ctx expr_1 #t)
+   -------------------------------- or-first-success
+   (eval ctx (|| expr_1 expr_2) #t)]
+
+  [(eval ctx expr_1 #f)
+   (eval ctx expr_2 boolean)
+   ------------------------------------- or-first-fail
+   (eval ctx (|| expr_1 expr_2) boolean)]
 
   [(eval ctx expr boolean)
-   ----------------------------------------- not ;added
-   (eval ctx (! expr) ,(not (term boolean)))]
+   ----------------------------------------- not
+   (eval ctx (¬ expr) ,(not (term boolean)))]
 
   [(eval ctx expr_1 number_1)
    (eval ctx expr_2 number_2)
-   ------------------------------------------------------------------ equality ;added
+   ------------------------------------------------------------------ equality
    (eval ctx (== expr_1 expr_2) ,(= (term number_1) (term number_2)))]
 
   [(eval ctx expr_1 number_1)
    (eval ctx expr_2 number_2)
-   ----------------------------------------------------------------- bigger-then ;added
+   ----------------------------------------------------------------- bigger-then
    (eval ctx (> expr_1 expr_2) ,(> (term number_1) (term number_2)))]
 
   [------------------ nil

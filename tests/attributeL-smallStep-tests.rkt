@@ -23,8 +23,8 @@
 (printf "expected: ((3.85841 ())),\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((- 7 3.14159) ()))))
 (printf "expected: ((21 ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((* 7 3) ()))))
 (printf "expected: ((21.99113 ())),\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((* 7 3.14159) ()))))
-(printf "expected: ((7/3 ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((÷ 14 6) ()))))
-(printf "expected: ((2.2281710853421357 ())),\t\t\t\tobtained: ~a\n"			(apply-reduction-relation* expr-red (term ((÷ 7 3.14159) ()))))
+(printf "expected: ((2 ())),\t\t\t\t\t\tobtained: ~a\n"					(apply-reduction-relation* expr-red (term ((÷ 14 6) ()))))
+(printf "expected: (((÷ 7 3.14159) ())),\t\t\t\t\tobtained: ~a\n"			(apply-reduction-relation* expr-red (term ((÷ 7 3.14159) ()))))
 
 
 
@@ -39,8 +39,8 @@
 (printf "expected: ((#t ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((|| #t #f) ()))))
 (printf "expected: ((#f ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((|| #f #f) ()))))
 (printf "expected: ((#t ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((|| #f #t) ()))))
-(printf "expected: ((#t ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((! #f) ()))))
-(printf "expected: ((#f ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((! #t) ()))))
+(printf "expected: ((#t ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((¬ #f) ()))))
+(printf "expected: ((#f ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((¬ #t) ()))))
 (printf "expected: ((#f ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((== 0 1) ()))))
 (printf "expected: ((#t ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((== 32 32) ()))))
 (printf "expected: ((#t ())),\t\t\t\t\t\tobtained: ~a\n"				(apply-reduction-relation* expr-red (term ((== 64 64.0) ()))))
@@ -94,8 +94,8 @@
 (printf "expected: ((12.281718172 ((x0 15) (x1 2.718281828)))),\t\tobtained: ~a\n"	(apply-reduction-relation* expr-red (term ((- x0 x1) ((x0 15) (x1 2.718281828))))))
 (printf "expected: ((105 ((x0 15) (x1 7)))),\t\t\t\tobtained: ~a\n"			(apply-reduction-relation* expr-red (term ((* x0 x1) ((x0 15) (x1 7))))))
 (printf "expected: ((40.774227419999995 ((x0 15) (x1 2.718281828)))),\tobtained: ~a\n"	(apply-reduction-relation* expr-red (term ((* x0 x1) ((x0 15) (x1 2.718281828))))))
-(printf "expected: ((15/7 ((x0 30) (x1 14)))),\t\t\t\tobtained: ~a\n"			(apply-reduction-relation* expr-red (term ((÷ x0 x1) ((x0 30) (x1 14))))))
-(printf "expected: ((5.5181916185035105 ((x0 15) (x1 2.718281828)))),\tobtained: ~a\n"	(apply-reduction-relation* expr-red (term ((÷ x0 x1) ((x0 15) (x1 2.718281828))))))
+(printf "expected: ((2 ((x0 30) (x1 14)))),\t\t\t\tobtained: ~a\n"			(apply-reduction-relation* expr-red (term ((÷ x0 x1) ((x0 30) (x1 14))))))
+(printf "expected: (((÷ 15 2.718281828) ((x0 15) (x1 2.718281828)))),\tobtained: ~a\n"	(apply-reduction-relation* expr-red (term ((÷ x0 x1) ((x0 15) (x1 2.718281828))))))
 
 
 (printf "\nVARIABLES LINKED TO LISTS\n\n")
@@ -143,9 +143,9 @@
 (test-equal (apply-reduction-relation* expr-red (term ((* 7 3.14159) ())))
             '((21.99113 ())))
 (test-equal (apply-reduction-relation* expr-red (term ((÷ 14 6) ())))
-            '((7/3 ())))
+            '((2 ())))
 (test-equal (apply-reduction-relation* expr-red (term ((÷ 7 3.14159) ())))
-            '((2.2281710853421357 ())))
+            '(((÷ 7 3.14159) ())))
 
 
 (test-equal (apply-reduction-relation* expr-red (term ((&& #t #t) ())))
@@ -164,9 +164,9 @@
             '((#f ())))
 (test-equal (apply-reduction-relation* expr-red (term ((|| #f #t) ())))
             '((#t ())))
-(test-equal (apply-reduction-relation* expr-red (term ((! #f) ())))
+(test-equal (apply-reduction-relation* expr-red (term ((¬ #f) ())))
             '((#t ())))
-(test-equal (apply-reduction-relation* expr-red (term ((! #t) ())))
+(test-equal (apply-reduction-relation* expr-red (term ((¬ #t) ())))
             '((#f ())))
 (test-equal (apply-reduction-relation* expr-red (term ((== 0 1) ())))
             '((#f ())))
@@ -251,9 +251,9 @@
 (test-equal (apply-reduction-relation* expr-red (term ((* x0 x1) ((x0 15) (x1 2.718281828)))))
             '((40.774227419999995 ((x0 15) (x1 2.718281828)))))
 (test-equal (apply-reduction-relation* expr-red (term ((÷ x0 x1) ((x0 30) (x1 14)))))
-            '((15/7 ((x0 30) (x1 14)))))
+            '((2 ((x0 30) (x1 14)))))
 (test-equal (apply-reduction-relation* expr-red (term ((÷ x0 x1) ((x0 15) (x1 2.718281828)))))
-            '((5.5181916185035105 ((x0 15) (x1 2.718281828)))))
+            '(((÷ 15 2.718281828) ((x0 15) (x1 2.718281828)))))
 
 
 (test-equal (apply-reduction-relation* expr-red (term (y ((y (: 127 128))))))

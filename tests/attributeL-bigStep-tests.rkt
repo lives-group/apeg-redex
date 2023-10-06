@@ -37,8 +37,8 @@
 (printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (|| #t #f) value) value))
 (printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (|| #f #f) value) value))
 (printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (|| #f #t) value) value))
-(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (! #f) value) value))
-(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (! #t) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (¬ #f) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (¬ #t) value) value))
 (printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 0 1) value) value))
 (printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 32 32) value) value))
 (printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 64 64.0) value) value))
@@ -163,9 +163,9 @@
             '(#f))
 (test-equal (judgment-holds (eval () (|| #f #t) value) value)
             '(#t))
-(test-equal (judgment-holds (eval () (! #f) value) value)
+(test-equal (judgment-holds (eval () (¬ #f) value) value)
             '(#t))
-(test-equal (judgment-holds (eval () (! #t) value) value)
+(test-equal (judgment-holds (eval () (¬ #t) value) value)
             '(#f))
 (test-equal (judgment-holds (eval () (== 0 1) value) value)
             '(#f))
@@ -276,21 +276,3 @@
 
 
 (test-results)
-
-
-#|
-ERROS ENCONTRADOS
-Listas e o terminal "nil" não são tratados:
-        judgment						result
-	(judgment-holds (eval () (: 1 2) value) value))		'()
-	(judgment-holds (eval () nil value) value))		'()
-
-A implementação de extensão de mapeamento "(put exp1 exp2 exp3)" presume que "exp2" é uma string, o que leva ao seguinte erro:
-        judgment								result
-        (judgment-holds (eval ((x "key")) (put (⇒ ()) x (* 3 4)) value) value)	'()
-
-A implementação de head e tail de listas não atua sobre variáveis
-        judgment								result
-        (judgment-holds (eval ((y (: 127 128))) (head y) value) value))		'()
-	(judgment-holds (eval ((y (: 127 128))) (tail y) value) value))		'()
-|#
