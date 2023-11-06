@@ -141,8 +141,8 @@
 (test-equal (judgment-holds (eval () (* 7 3.14159) value) value)
             '(21.99113))
 (test-equal (judgment-holds (eval () (÷ 14 6) value) value)
-            '(7/3))
-(test-equal (judgment-holds (eval () (÷ 7 3.14159) value) value)
+            '(2))
+(test-equal (judgment-holds (eval () (÷ 7.0 3.14159) value) value)
             '(2.2281710853421357))
 
 
@@ -250,8 +250,8 @@
 (test-equal (judgment-holds (eval ((x0 15) (x1 2.718281828)) (* x0 x1) value) value)
             '(40.774227419999995))
 (test-equal (judgment-holds (eval ((x0 30) (x1 14)) (÷ x0 x1) value) value)
-            '(15/7))
-(test-equal (judgment-holds (eval ((x0 15) (x1 2.718281828)) (÷ x0 x1) value) value)
+            '(2))
+(test-equal (judgment-holds (eval ((x0 15.0) (x1 2.718281828)) (÷ x0 x1) value) value)
             '(5.5181916185035101))
 
 
