@@ -79,7 +79,7 @@
   ;Bind
   [(parse ctx G p (number_consumed ... number ...) (number ...) ctx_1)
    ---------------------------------------------------------------------------------------------------------------------------------------------- bind-success ;added
-   (parse ctx G (= x p) (number_consumed ... number ...) (number ...) (bind-update ctx_1 x ,(string-join (map ~a (term (number_consumed ...))))))]
+   (parse ctx G (= x p) (number_consumed ... number ...) (number ...) (bind-update ctx_1 x ,(list->string (map integer->char (term (number_consumed ...))))))]
 
   [(parse ctx G p s ⊥ ctx_1)
    ----------------------------- bind-fail

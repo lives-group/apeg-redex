@@ -10,8 +10,8 @@
   [-------------------------- boolean
    (eval ctx boolean boolean)]
   
-  [------------------------ number
-   (eval ctx number number)]
+  [------------------------ integer
+   (eval ctx integer integer)]
 
   [------------------------ string
    (eval ctx string string)]
@@ -19,31 +19,25 @@
   [-------------------------------------------- variable
    (eval ((_ _)... (x value) (_ _)...) x value)]
 
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
+  [(eval ctx expr_1 integer_1)
+   (eval ctx expr_2 integer_2)
    ----------------------------------------------------------------- addition
-   (eval ctx (+ expr_1 expr_2) ,(+ (term number_1) (term number_2)))]
-
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
-   ----------------------------------------------------------------- multiplication
-   (eval ctx (* expr_1 expr_2) ,(* (term number_1) (term number_2)))]
-
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
-   ----------------------------------------------------------------- subtraction
-   (eval ctx (- expr_1 expr_2) ,(- (term number_1) (term number_2)))]
+   (eval ctx (+ expr_1 expr_2) ,(+ (term integer_1) (term integer_2)))]
 
   [(eval ctx expr_1 integer_1)
    (eval ctx expr_2 integer_2)
-   -------------------------------------------------------------------------- division-integer ;added
-   (eval ctx (÷ expr_1 expr_2) ,(quotient (term integer_1) (term integer_2)))]
+   ----------------------------------------------------------------- multiplication
+   (eval ctx (* expr_1 expr_2) ,(* (term integer_1) (term integer_2)))]
 
-  [(eval ctx expr_1 real_1)
-   (eval ctx expr_2 real_2)
-   (side-condition ,(not (or (exact-integer? (term real_1)) (exact-integer? (term real_2)))))
-   ------------------------------------------------------------- division-real ;modified
-   (eval ctx (÷ expr_1 expr_2) ,(/ (term real_1) (term real_2)))]
+  [(eval ctx expr_1 integer_1)
+   (eval ctx expr_2 integer_2)
+   ----------------------------------------------------------------- subtraction
+   (eval ctx (- expr_1 expr_2) ,(- (term integer_1) (term integer_2)))]
+
+  [(eval ctx expr_1 integer_1)
+   (eval ctx expr_2 integer_2)
+   -------------------------------------------------------------------------- division
+   (eval ctx (÷ expr_1 expr_2) ,(quotient (term integer_1) (term integer_2)))]
 
   [(eval ctx expr_1 #t)
    (eval ctx expr_2 boolean)
@@ -67,15 +61,15 @@
    ----------------------------------------- not
    (eval ctx (¬ expr) ,(not (term boolean)))]
 
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
+  [(eval ctx expr_1 integer_1)
+   (eval ctx expr_2 integer_2)
    ------------------------------------------------------------------ equality
-   (eval ctx (== expr_1 expr_2) ,(= (term number_1) (term number_2)))]
+   (eval ctx (== expr_1 expr_2) ,(= (term integer_1) (term integer_2)))]
 
-  [(eval ctx expr_1 number_1)
-   (eval ctx expr_2 number_2)
+  [(eval ctx expr_1 integer_1)
+   (eval ctx expr_2 integer_2)
    ----------------------------------------------------------------- bigger-then
-   (eval ctx (> expr_1 expr_2) ,(> (term number_1) (term number_2)))]
+   (eval ctx (> expr_1 expr_2) ,(> (term integer_1) (term integer_2)))]
 
   [------------------ nil
    (eval ctx nil nil)]

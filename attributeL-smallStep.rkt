@@ -35,7 +35,7 @@
      (⇒ ((string value)... (H expr)   (expr expr)...))
      (⇒ ((string value)... (string H) (expr expr)...))
      hole)
-  (value number
+  (value integer
          string
          (⇒ ((string value) ...))
          (: value value)
@@ -45,58 +45,53 @@
 (define expr-red
   (reduction-relation ctx-AttributeL
   #:domain VS
-   (--> ((in-hole H (+ number_1 number_2)) ctx)
-        ((in-hole H ,(+ (term number_1) (term number_2))) ctx)
+   (--> ((in-hole H (+ integer_1 integer_2)) ctx)
+        ((in-hole H ,(+ (term integer_1) (term integer_2))) ctx)
         "addition")
    
    (--> ((in-hole H x) ((x_1 value_1)... (x value) (x_2 value_2)... ))
         ((in-hole H value) ((x_1 value_1)... (x value) (x_2 value_2)... ))
         "variable")
    
-   (--> ((in-hole H (* number_1 number_2)) ctx)
-        ((in-hole H ,(* (term number_1) (term number_2))) ctx)
+   (--> ((in-hole H (* integer_1 integer_2)) ctx)
+        ((in-hole H ,(* (term integer_1) (term integer_2))) ctx)
         "multiplication")
    
-   (--> ((in-hole H (- number_1 number_2)) ctx)
-        ((in-hole H ,(- (term number_1) (term number_2))) ctx)
+   (--> ((in-hole H (- integer_1 integer_2)) ctx)
+        ((in-hole H ,(- (term integer_1) (term integer_2))) ctx)
         "subtraction")
    
    (--> ((in-hole H (÷ integer_1 integer_2)) ctx)
         ((in-hole H ,(quotient (term integer_1) (term integer_2))) ctx)
-        "division-integer") ;added
-
-   (--> ((in-hole H (÷ real_1 real_2)) ctx)
-        ((in-hole H ,(/ (term real_1) (term real_2))) ctx)
-        (side-condition (not (or (exact-integer? (term real_1)) (exact-integer? (term real_2)))))
-        "division-real") ;modified
+        "division")
 
    (--> ((in-hole H (&& #t boolean)) ctx)
         ((in-hole H boolean) ctx)
-        "and-first-success") ;added
+        "and-first-success")
 
    (--> ((in-hole H (&& #f expr)) ctx)
         ((in-hole H #f) ctx)
-        "and-first-fail") ;added
+        "and-first-fail")
 
    (--> ((in-hole H (|| #t expr)) ctx)
         ((in-hole H #t) ctx)
-        "or-first-success") ;added
+        "or-first-success")
 
    (--> ((in-hole H (|| #f boolean)) ctx)
         ((in-hole H boolean) ctx)
-        "or-first-fail") ;added
+        "or-first-fail")
 
    (--> ((in-hole H (¬ boolean)) ctx)
         ((in-hole H ,(not (term boolean))) ctx)
-        "not") ;added
+        "not")
 
-   (--> ((in-hole H (== number_1 number_2)) ctx)
-        ((in-hole H ,(= (term number_1) (term number_2))) ctx)
-        "equality") ;added
+   (--> ((in-hole H (== integer_1 integer_2)) ctx)
+        ((in-hole H ,(= (term integer_1) (term integer_2))) ctx)
+        "equality")
 
-   (--> ((in-hole H (> number_1 number_2)) ctx)
-        ((in-hole H ,(> (term number_1) (term number_2))) ctx)
-        "bigger-then") ;added
+   (--> ((in-hole H (> integer_1 integer_2)) ctx)
+        ((in-hole H ,(> (term integer_1) (term integer_2))) ctx)
+        "bigger-then")
    
    (--> ((in-hole H (get (⇒ ((string value)...)) string_key)) ctx)
         ((in-hole H (mapping-get (⇒ ((string value)...)) string_key)) ctx)

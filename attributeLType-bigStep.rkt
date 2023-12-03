@@ -13,55 +13,31 @@
   [-------------------------------- integer
    (types ctx integer type:integer)]
 
-  [(side-condition ,(not (exact-integer? (term real))))
-   -------------------------- real
-   (types ctx real type:real)]
-
   [------------------------------ string
    (types ctx string type:string)]
 
-  [----------------------------------------------------------- variable
+  [----------------------------------------------------------- attribute
    (types ((x_1 type_1) ... (x type) (x_2 type_2) ...) x type)]
 
   [(types ctx expr_1 type:integer)
    (types ctx expr_2 type:integer)
-   ------------------------------------------ addition-integer
+   ------------------------------------------ addition
    (types ctx (+ expr_1 expr_2) type:integer)]
 
-  [(types ctx expr_1 type:real)
-   (types ctx expr_2 type:real)
-   --------------------------------------- addition-real
-   (types ctx (+ expr_1 expr_2) type:real)]
-
   [(types ctx expr_1 type:integer)
    (types ctx expr_2 type:integer)
-   ------------------------------------------ multiplication-integer
+   ------------------------------------------ multiplication
    (types ctx (* expr_1 expr_2) type:integer)]
 
-  [(types ctx expr_1 type:real)
-   (types ctx expr_2 type:real)
-   --------------------------------------- multiplication-real
-   (types ctx (* expr_1 expr_2) type:real)]
-
   [(types ctx expr_1 type:integer)
    (types ctx expr_2 type:integer)
-   ------------------------------------------ subtraction-integer
+   ------------------------------------------ subtraction
    (types ctx (- expr_1 expr_2) type:integer)]
 
-  [(types ctx expr_1 type:real)
-   (types ctx expr_2 type:real)
-   --------------------------------------- subtraction-real
-   (types ctx (- expr_1 expr_2) type:real)]
-
   [(types ctx expr_1 type:integer)
    (types ctx expr_2 type:integer)
-   ------------------------------------------ division-integer
+   ------------------------------------------ division
    (types ctx (÷ expr_1 expr_2) type:integer)]
-
-  [(types ctx expr_1 type:real)
-   (types ctx expr_2 type:real)
-   --------------------------------------- division-real
-   (types ctx (÷ expr_1 expr_2) type:real)]
 
   [(types ctx expr_1 type:boolean)
    (types ctx expr_2 type:boolean)
@@ -79,22 +55,12 @@
 
   [(types ctx expr_1 type:integer)
    (types ctx expr_2 type:integer)
-   ------------------------------------------- equality-integer
-   (types ctx (== expr_1 expr_2) type:boolean)]
-
-  [(types ctx expr_1 type:real)
-   (types ctx expr_2 type:real)
-   ------------------------------------------- equality-real
+   ------------------------------------------- equality
    (types ctx (== expr_1 expr_2) type:boolean)]
 
   [(types ctx expr_1 type:integer)
    (types ctx expr_2 type:integer)
-   ------------------------------------------ bigger-then-integer
-   (types ctx (> expr_1 expr_2) type:boolean)]
-
-  [(types ctx expr_1 type:real)
-   (types ctx expr_2 type:real)
-   ------------------------------------------ bigger-then-real
+   ------------------------------------------ bigger-then
    (types ctx (> expr_1 expr_2) type:boolean)]
 
   [(types ctx expr_head type)

@@ -17,7 +17,6 @@
     [(PTVar "Production" (PTList (list value_1 values_1 ... (PTSym #\}) values_2 ... value_2))) (term (,(peg-compiler value_1) ,(map peg-compiler values_1) ,(map peg-compiler values_2) ,(peg-compiler value_2)))]
     [(PTVar "ProductionInput" (PTList (list value_1 value_2))) (term (,(peg-compiler value_1) ,(peg-compiler value_2)))]
     [(PTVar "Type" (PTList values)) (Type->term values)]
-    [(PTVar "Type" value) (Type->term (list value))]
 
     
     [(PTVar "Bind" (PTList values)) (Bind->term values)]
@@ -28,8 +27,9 @@
     [(PTVar "PegExpression" (PTList (list value_1 value_2))) (term (/ ,(peg-compiler value_1) ,(peg-compiler value_2)))]
     [(PTVar "PegFactor" value) (peg-compiler value)]
     [(PTVar "PegParenthesesExpression" (PTList (list value))) (peg-compiler value)]
-    [(PTVar "PegPrefix" (PTList (list value))) (peg-compiler value)]
+    ;[(PTVar "PegPrefix" (PTList (list value))) (peg-compiler value)] ;old version
     [(PTVar "PegPrefix" (PTList (list (PTSym #\!) value))) (term (! ,(peg-compiler value)))]
+    [(PTVar "PegPrefix" value) (peg-compiler value)] ;modified
     [(PTVar "PegSequence" (PTList values)) (PegSequence->term values)]
     [(PTVar "PegUnaryOperation" (PTList (list value))) (peg-compiler value)]
     [(PTVar "PegUnaryOperation" (PTList (list value_1 (PTSym symbol)))) (let [(value_2 (peg-compiler value_1))] (match symbol [#\* (term (* ,value_2))] [#\+ (term (• ,value_2 (* ,value_2)))] [#\? (term (/ ,value_2 ε))]))]
@@ -52,8 +52,9 @@
     [(PTVar "Boolean" (PTStr "true")) (term #t)]
     [(PTVar "Boolean" (PTStr "false")) (term #f)]
     [(PTVar "ConditionalExpression" (PTList (list value))) (peg-compiler value)]
-    [(PTVar "ConditionalExpression" (PTList (list value_1 (PTStr "==") value_2))) (term (== ,(peg-compiler value_1) ,(peg-compiler value_2)))]
-    [(PTVar "ConditionalExpression" (PTList (list value_1 (PTSym #\>) value_2))) (term (> ,(peg-compiler value_1) ,(peg-compiler value_2)))]
+    [(PTVar "ConditionalExpression" (PTList (list value_1 (PTStr symbol) value_2))) (ConditionalExpression->term (peg-compiler value_1) symbol (peg-compiler value_2))]
+    ;[(PTVar "ConditionalExpression" (PTList (list value_1 (PTStr "==") value_2))) (term (== ,(peg-compiler value_1) ,(peg-compiler value_2)))]
+    ;[(PTVar "ConditionalExpression" (PTList (list value_1 (PTSym #\>) value_2))) (term (> ,(peg-compiler value_1) ,(peg-compiler value_2)))]
     [(PTVar "Expression" (PTList (list value))) (peg-compiler value)]
     [(PTVar "Factor" (PTList (list (PTSym #\-) value))) (term (- 0 ,(peg-compiler value)))]
     [(PTVar "Factor" (PTList (list (PTSym #\~) value))) (term (¬ ,(peg-compiler value)))]
@@ -68,7 +69,7 @@
     [(PTVar "LiteralMapping" (PTList values)) (term (⇒ ,(map peg-compiler values)))]
     [(PTVar "MappingHandler" value) (peg-compiler value)]
     [(PTVar "MappingValue" (PTList (list value_1 value_2))) (term (,(peg-compiler value_1) ,(peg-compiler value_2)))]
-    [(PTVar "Number" (PTStr value)) (term ,(string->number value))]
+    [(PTVar "Integer" (PTStr value)) (term ,(string->number value))]
     [(PTVar "Parentheses" (PTList (list value))) (peg-compiler value)]
     [(PTVar "Primary" value) (peg-compiler value)]
     [(PTVar "Put" (PTList (list value_1 value_2 value_3))) (term (put ,(peg-compiler value_1) ,(peg-compiler value_2) ,(peg-compiler value_3)))]
@@ -95,6 +96,16 @@
     [(list value_1 value_2) (term (= ,(peg-compiler value_1) ,(peg-compiler value_2)))]
     [(list value_1 value_2 values ...) (term (• (= ,(peg-compiler value_1) ,(peg-compiler value_2)) ,(Bind->term values)))]))
 
+
+(define (ConditionalExpression->term value_1 symbol value_2)
+  (match symbol
+    ["==" (term (== ,value_1 ,value_2))]
+    ["/=" (term (¬ (== ,value_1 ,value_2)))]
+    [">" (term (> ,value_1 ,value_2))]
+    [">=" (term (|| (> ,value_1 ,value_2) (== ,value_1 ,value_2)))]
+    ["<" (term (¬ (> ,value_1 ,value_2)))]
+    ["<=" (term (¬ (> ,value_1 ,value_2)))]))
+
             
 (define (escape-character->integer input)
   (match input
@@ -110,7 +121,7 @@
     [98 8]
     [116 9]
     [110 10]
-    [114 14]
+    [114 13]
     [value value]))
 
 
@@ -167,6 +178,24 @@
     [(list (PTStr "int") values ...) (term type:integer)]
     [(list (PTStr "float") values ...) (term type:real)]
     [(list (PTStr "string") values ...) (term type:string)]))
+
+
+;REUNIÃO 10/11/2023
+
+;(peg-compiler (PTVar "Expression" (run-parse-from "Expression" "12/=3")))
+;(peg-compiler (PTVar "Expression" (run-parse-from "Expression" "12>=3")))
+;(peg-compiler (PTVar "Expression" (run-parse-from "Expression" "12>3")))
+;(peg-compiler (PTVar "Expression" (run-parse-from "Expression" "12<3")))
+;(peg-compiler (PTVar "Expression" (run-parse-from "Expression" "12<=3")))
+;(peg-compiler (PTVar "Expression" (run-parse-from "Expression" "12==3")))
+
+
+;(peg-compiler (PTVar "NonterminalCall" (run-parse-from "NonterminalCall" "Test     {    x   ,    5    ,    true   ,  3.14  ,  \"anything\"  }  {  y  ,  w  ,  z  }")))
+;(peg-compiler (PTVar "Range" (run-parse-from "Range" "[ '1' -   '3' ]   ")))
+;(peg-compiler (PTVar "Range" (run-parse-from "Range" "[ '1' , '2'   ,   '3' ]   ")))
+;(run-parse-from "Type" "int        ")
+;(run-parse-from "Type" "<   int    >    ")
+;(run-parse-from "Type" "[  <   int    >  \n ]   ")
 
 
 ;GRAMMAR

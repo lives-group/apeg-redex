@@ -7,12 +7,6 @@
          redex)
 
 
-(define (result-adaptation reduction-result)
-  (if (< (length reduction-result) 2)
-      (list (car (car reduction-result)))
-      (append (car (car reduction-result)) (result-adaptation (cdr reduction-result)))))
-
-
 (test-equal (judgment-holds (eval () ,(peg-compiler (PTVar "Expression" (run-parse-from "Expression" "true"))) value) value)
             '(#t))
 (test-equal (judgment-holds (eval () ,(peg-compiler (PTVar "Expression" (run-parse-from "Expression" "123"))) value) value)

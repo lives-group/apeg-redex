@@ -392,28 +392,28 @@ RESTO 5 - 101
             '((() ((result 16)))))
 
 ;1 1/2 1/4 1/8 1/16 ...
-(test-equal (judgment-holds (parse () ((S () (list (+ summation 0.0)) (A () (list summation)))
+#;(test-equal (judgment-holds (parse () ((S () (list (+ summation 0.0)) (A () (list summation)))
                                        (A () (list summation) (/ (• 1 (B () (list summation))) ((← list (: 1.0 nil)) (← summation 1.0))))
                                        (B () (list summation) (/ (• 1 (C ((: 1.0 0.5) 1.5) (list summation))) ((← list (: 1.0 0.5)) (← summation 1.5))))
                                        (C (((: type:real) list) (type:real summation)) (list summation) (/ (• 1 (C ((: list (÷ (tail list) 2.0)) (+ summation (÷ (tail list) 2.0))) (list summation))) ε)))
                                    (S () (list summation)) () r ctx) (r ctx))
             '((() ((list (: 1.0 nil)) (summation 1.0)))))
 
-(test-equal (judgment-holds (parse () ((S () (list (+ summation 0.0)) (A () (list summation)))
+#;(test-equal (judgment-holds (parse () ((S () (list (+ summation 0.0)) (A () (list summation)))
                                        (A () (list summation) (/ (• 1 (B () (list summation))) ((← list (: 1.0 nil)) (← summation 1.0))))
                                        (B () (list summation) (/ (• 1 (C ((: 1.0 0.5) 1.5) (list summation))) ((← list (: 1.0 0.5)) (← summation 1.5))))
                                        (C (((: type:real) list) (type:real summation)) (list summation) (/ (• 1 (C ((: list (÷ (tail list) 2.0)) (+ summation (÷ (tail list) 2.0))) (list summation))) ε)))
                                    (S () (list summation)) (1) r ctx) (r ctx))
             '((() ((list (: 1.0 0.5)) (summation 1.5)))))
 
-(test-equal (judgment-holds (parse () ((S () (list (+ summation 0.0)) (A () (list summation)))
+#;(test-equal (judgment-holds (parse () ((S () (list (+ summation 0.0)) (A () (list summation)))
                                        (A () (list summation) (/ (• 1 (B () (list summation))) ((← list (: 1.0 nil)) (← summation 1.0))))
                                        (B () (list summation) (/ (• 1 (C ((: 1.0 0.5) 1.5) (list summation))) ((← list (: 1.0 0.5)) (← summation 1.5))))
                                        (C (((: type:real) list) (type:real summation)) (list summation) (/ (• 1 (C ((: list (÷ (tail list) 2.0)) (+ summation (÷ (tail list) 2.0))) (list summation))) ε)))
                                    (S () (list summation)) (1 1 1 1) r ctx) (r ctx))
             '((() ((list (: (: (: 1.0 0.5) 0.25) 0.125)) (summation 1.875)))))
 
-(test-equal (judgment-holds (parse () ((S () (list (+ summation 0.0)) (A () (list summation)))
+#;(test-equal (judgment-holds (parse () ((S () (list (+ summation 0.0)) (A () (list summation)))
                                        (A () (list summation) (/ (• 1 (B () (list summation))) ((← list (: 1.0 nil)) (← summation 1.0))))
                                        (B () (list summation) (/ (• 1 (C ((: 1.0 0.5) 1.5) (list summation))) ((← list (: 1.0 0.5)) (← summation 1.5))))
                                        (C (((: type:real) list) (type:real summation)) (list summation) (/ (• 1 (C ((: list (÷ (tail list) 2.0)) (+ summation (÷ (tail list) 2.0))) (list summation))) ε)))
@@ -480,7 +480,7 @@ RESTO 5 - 101
             '(((1 2 3) ((x #t)))))
 
 (test-equal (judgment-holds (parse () () (= x (• 1 (• 2 (• 3 4)))) (1 2 3 4 5) r ctx) (r ctx))
-            '(((5) ((x "1 2 3 4")))))
+            '(((5) ((x "\u0001\u0002\u0003\u0004")))))
 (test-equal (judgment-holds (parse () () (= x (• 1 (• 2 (• 3 4)))) (1 2 3 5 5) r ctx) (r ctx))
             '((⊥ ())))
 
@@ -551,23 +551,23 @@ RESTO 5 - 101
 (test-equal (judgment-holds (parse () ((S () () (* (A () ())))
                                        (A () () 1))
                                    (= numbers-one (S () ())) (1 1 1 1 1 1 1 1 1 2 3 4 5 4 3 2 1) r ctx) (r ctx))
-            '(((2 3 4 5 4 3 2 1) ((numbers-one "1 1 1 1 1 1 1 1 1")))))
+            '(((2 3 4 5 4 3 2 1) ((numbers-one "\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001")))))
 
 (test-equal (judgment-holds (parse () ((S ((type:integer count)) (count) (* (A (count) (count))))
                                        (A ((type:integer count)) ((+ count 1)) 1))
                                    (= numbers-one (S (0) (count))) (1 1 1 1 1 1 1 1 1 2 3 4 5 4 3 2 1) r ctx) (r ctx))
-            '(((2 3 4 5 4 3 2 1) ((count 9) (numbers-one "1 1 1 1 1 1 1 1 1")))))
+            '(((2 3 4 5 4 3 2 1) ((count 9) (numbers-one "\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001")))))
 
 (test-equal (judgment-holds (parse () ((S ((type:integer count)) (count) (* (A (count) (count))))
                                        (A ((type:integer count)) ((+ count 1)) 1))
                                    (= count (S (0) (count))) (1 1 1 1 1 1 1 1 1 2 3 4 5 4 3 2 1) r ctx) (r ctx))
-            '(((2 3 4 5 4 3 2 1) ((count "1 1 1 1 1 1 1 1 1")))))
+            '(((2 3 4 5 4 3 2 1) ((count "\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001")))))
 
 (test-equal (judgment-holds (parse () () (= numbers-one (* 1)) (1 1 1 1 1 1 1 1 1 2 3 4 5 4 3 2 1) r ctx) (r ctx))
-            '(((2 3 4 5 4 3 2 1) ((numbers-one "1 1 1 1 1 1 1 1 1")))))
+            '(((2 3 4 5 4 3 2 1) ((numbers-one "\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001")))))
 
 (test-equal (judgment-holds (parse () () (• (= one 1) (• (= two 2) (• (= three 3) (• (= four 4) (= five 5))))) (1 2 3 4 5) r ctx) (r ctx))
-            '((() ((one "1") (two "2") (three "3") (four "4") (five "5")))))
+            '((() ((one "\u0001") (two "\u0002") (three "\u0003") (four "\u0004") (five "\u0005")))))
 
 
 (test-results)

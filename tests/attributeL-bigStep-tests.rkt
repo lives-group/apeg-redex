@@ -18,13 +18,13 @@
 
 
 (printf "expected: (7),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (+ 3 4) value) value))
-(printf "expected: (7.14159),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (+ 3.14159 4) value) value))
+(printf "expected: (314163),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (+ 314159 4) value) value))
 (printf "expected: (4),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (- 7 3) value) value))
-(printf "expected: (3.85841),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (- 7 3.14159) value) value))
+(printf "expected: (-314152),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (- 7 314159) value) value))
 (printf "expected: (21),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (* 7 3) value) value))
-(printf "expected: (21.99113),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (* 7 3.14159) value) value))
-(printf "expected: (7/3),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (÷ 14 6) value) value))
-(printf "expected: (2.2281710853421357),\t\t\tobtained: ~a\n"		(judgment-holds (eval () (÷ 7 3.14159) value) value))
+(printf "expected: (2199113),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (* 7 314159) value) value))
+(printf "expected: (2),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (÷ 14 6) value) value))
+(printf "expected: (0),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (÷ 7 314159) value) value))
 
 (printf "\nMANIPULATION OF BOOLEANS\n\n")
 
@@ -41,10 +41,10 @@
 (printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (¬ #t) value) value))
 (printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 0 1) value) value))
 (printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 32 32) value) value))
-(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 64 64.0) value) value))
-(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (> 3 4.5) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (== 64 640) value) value))
+(printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (> 3 45) value) value))
 (printf "expected: (#f),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (> 3 3) value) value))
-(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (> 4.5 3) value) value))
+(printf "expected: (#t),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval () (> 45 3) value) value))
 
 
 (printf "\nMANIPULATION OF LISTS\n\n")
@@ -87,13 +87,13 @@
 
 
 (printf "expected: (3),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 2) (x1 1)) (+ x0 x1) value) value))
-(printf "expected: (3.718281828),\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 2.718281828) (x1 1)) (+ x0 x1) value) value))
+(printf "expected: (2718281829),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 2718281828) (x1 1)) (+ x0 x1) value) value))
 (printf "expected: (8),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 7)) (- x0 x1) value) value))
-(printf "expected: (12.281718172),\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 2.718281828)) (- x0 x1) value) value))
+(printf "expected: (-2718281813),\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 2718281828)) (- x0 x1) value) value))
 (printf "expected: (105),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 7)) (* x0 x1) value) value))
-(printf "expected: (40.774227419999995),\t\t\tobtained: ~a\n"		(judgment-holds (eval ((x0 15) (x1 2.718281828)) (* x0 x1) value) value))
-(printf "expected: (15/7),\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 30) (x1 14)) (÷ x0 x1) value) value))
-(printf "expected: (5.5181916185035105),\t\t\tobtained: ~a\n"		(judgment-holds (eval ((x0 15) (x1 2.718281828)) (÷ x0 x1) value) value))
+(printf "expected: (40774227420),\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 2718281828)) (* x0 x1) value) value))
+(printf "expected: (2),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 30) (x1 14)) (÷ x0 x1) value) value))
+(printf "expected: (0),\t\t\t\t\tobtained: ~a\n"			(judgment-holds (eval ((x0 15) (x1 2718281828)) (÷ x0 x1) value) value))
 
 
 (printf "\nVARIABLES LINKED TO LISTS\n\n")
@@ -130,20 +130,20 @@
 
 (test-equal (judgment-holds (eval () (+ 3 4) value) value)
             '(7))
-(test-equal (judgment-holds (eval () (+ 3.14159 4) value) value)
-            '(7.14159))
+(test-equal (judgment-holds (eval () (+ 314159 4) value) value)
+            '(314163))
 (test-equal (judgment-holds (eval () (- 7 3) value) value)
             '(4))
-(test-equal (judgment-holds (eval () (- 7 3.14159) value) value)
-            '(3.85841))
+(test-equal (judgment-holds (eval () (- 7 314159) value) value)
+            '(-314152))
 (test-equal (judgment-holds (eval () (* 7 3) value) value)
             '(21))
-(test-equal (judgment-holds (eval () (* 7 3.14159) value) value)
-            '(21.99113))
+(test-equal (judgment-holds (eval () (* 7 314159) value) value)
+            '(2199113))
 (test-equal (judgment-holds (eval () (÷ 14 6) value) value)
             '(2))
-(test-equal (judgment-holds (eval () (÷ 7.0 3.14159) value) value)
-            '(2.2281710853421357))
+(test-equal (judgment-holds (eval () (÷ 70 314159) value) value)
+            '(0))
 
 
 
@@ -171,13 +171,13 @@
             '(#f))
 (test-equal (judgment-holds (eval () (== 32 32) value) value)
             '(#t))
-(test-equal (judgment-holds (eval () (== 64 64.0) value) value)
-            '(#t))
-(test-equal (judgment-holds (eval () (> 3 4.5) value) value)
+(test-equal (judgment-holds (eval () (== 64 640) value) value)
+            '(#f))
+(test-equal (judgment-holds (eval () (> 3 45) value) value)
             '(#f))
 (test-equal (judgment-holds (eval () (> 3 3) value) value)
             '(#f))
-(test-equal (judgment-holds (eval () (> 4.5 3) value) value)
+(test-equal (judgment-holds (eval () (> 45 3) value) value)
             '(#t))
 
 
@@ -239,20 +239,20 @@
 
 (test-equal (judgment-holds (eval ((x0 2) (x1 1)) (+ x0 x1) value) value)
             '(3))
-(test-equal (judgment-holds (eval ((x0 2.718281828) (x1 1)) (+ x0 x1) value) value)
-            '(3.718281828))
+(test-equal (judgment-holds (eval ((x0 2718281828) (x1 1)) (+ x0 x1) value) value)
+            '(2718281829))
 (test-equal (judgment-holds (eval ((x0 15) (x1 7)) (- x0 x1) value) value)
             '(8))
-(test-equal (judgment-holds (eval ((x0 15) (x1 2.718281828)) (- x0 x1) value) value)
-            '(12.281718172))
+(test-equal (judgment-holds (eval ((x0 15) (x1 2718281828)) (- x0 x1) value) value)
+            '(-2718281813))
 (test-equal (judgment-holds (eval ((x0 15) (x1 7)) (* x0 x1) value) value)
             '(105))
-(test-equal (judgment-holds (eval ((x0 15) (x1 2.718281828)) (* x0 x1) value) value)
-            '(40.774227419999995))
+(test-equal (judgment-holds (eval ((x0 15) (x1 2718281828)) (* x0 x1) value) value)
+            '(40774227420))
 (test-equal (judgment-holds (eval ((x0 30) (x1 14)) (÷ x0 x1) value) value)
             '(2))
-(test-equal (judgment-holds (eval ((x0 15.0) (x1 2.718281828)) (÷ x0 x1) value) value)
-            '(5.5181916185035101))
+(test-equal (judgment-holds (eval ((x0 150) (x1 2718281828)) (÷ x0 x1) value) value)
+            '(0))
 
 
 (test-equal (judgment-holds (eval ((y (: 127 128))) y value) value)

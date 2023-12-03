@@ -24,7 +24,7 @@
         (> expr expr)			; representação da operação de maior que: ambas as expressões devem reduzir para literais números
         x]				; representação da operação de acesso à variável: a operação emperra caso a variável não esteja definida no contexto da avaliação
   [l ::= boolean			; representação de literal boolean
-     number				; representação de literal número
+     integer				; representação de literal número
      string]				; representação de literal string
   [x ::= variable-not-otherwise-mentioned]); representação de variável
 
@@ -44,7 +44,6 @@
   [ctx ::= .... ((x type)...)]		; representação de contexto
   [type ::= type:boolean		; representação de tipo boolean
         type:integer			; representação de tipo inteiro
-        type:real			; representação de tipo real
         type:string			; representação de tipo string
         (→ (type ...) (type ...))
         (⇒ type)
