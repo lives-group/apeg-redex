@@ -19,6 +19,10 @@
   [-------------------------------- terminal-empty-fail
    (parse ctx G natural_1 () ⊥ ctx)]
 
+  ;Empty
+  [----------------------- empty
+   (parse ctx G ε s s ctx)]
+
   ;Choice 
   [(parse ctx G p_1 s s_1 ctx_1)
    ------------------------------------- choice-first-success
@@ -63,10 +67,6 @@
    ----------------------------- repetition-next
    (parse ctx G (* p) s r ctx_2)]
 
-  ;Empty
-  [----------------------- empty
-   (parse ctx G ε s s ctx)]
-
   ;Constraint
   [(eval ctx expr #t)
    ------------------------------ constraint-success
@@ -78,21 +78,21 @@
   
   ;Bind
   [(parse ctx G p (number_consumed ... number ...) (number ...) ctx_1)
-   ---------------------------------------------------------------------------------------------------------------------------------------------- bind-success ;added
+   ---------------------------------------------------------------------------------------------------------------------------------------------------------- bind-success
    (parse ctx G (= x p) (number_consumed ... number ...) (number ...) (bind-update ctx_1 x ,(list->string (map integer->char (term (number_consumed ...))))))]
 
   [(parse ctx G p s ⊥ ctx_1)
    ----------------------------- bind-fail
    (parse ctx G (= x p) s ⊥ ctx)]
 
-  ;Non-terminal
+  ;Nonterminal
   [(parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) p_1 s s_1 ctx_1)
    (parse ctx (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) (make-ctx-update (x_3 ...) (evalList ctx_1 (expr_1 ...))) s_1 s_1 ctx_2)
-   ------------------------------------------------------------------------------------------------------- non-terminal-success
+   ------------------------------------------------------------------------------------------------------- nonterminal-success
    (parse ctx (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) (x_1 (expr ...) (x_3 ...)) s s_1 ctx_2)]
   
   [(parse (make-ctx (x_2 ...) (evalList ctx (expr ...))) (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) p_1 s ⊥ ctx_1)
-   --------------------------------------------------------------------------------------------------- non-terminal-fail
+   --------------------------------------------------------------------------------------------------- nonterminal-fail
    (parse ctx (NT_1 ... (x_1 ((type x_2) ...) (expr_1 ...) p_1) NT_2 ...) (x_1 (expr ...) (x_3 ...)) s ⊥ ctx)]
 
   ;Update

@@ -21,7 +21,6 @@
 
 
 (define-extended-language val-AttributePeg AttributePeg
-  [P ::= (p s)] 
   [s ::= (natural ...)]
   [r ::= s
      ⊥])

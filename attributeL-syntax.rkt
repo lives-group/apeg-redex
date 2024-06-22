@@ -34,10 +34,9 @@
   [value ::= boolean			; representação de literal boolean
          number				; representação de literal número
          string				; representação de literal string
-         (⇒ ((string value) ...))	; representação de literal mapeamento
+         (⇒ ((string_!_ value) ...))	; representação de literal mapeamento
          (: value value)		; representação de literal lista
-         nil				; representação de literal lista vazia
-         undef])			; representação de literal indefinido
+         nil])				; representação de literal lista vazia
 
 
 (define-extended-language val-AttributeLType val-AttributeL

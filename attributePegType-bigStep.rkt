@@ -13,11 +13,16 @@
   [---------------------- terminal
    (typesPeg ctx G natural ctx)]
 
+  ;Empty
+  [---------------------- empty
+   (typesPeg ctx G ε ctx)]
+
   ;Choice
   [(typesPeg ctx G p_1 ctx_1)
    (typesPeg ctx G p_2 ctx_2)
-   -------------------------------- choice
-   (typesPeg ctx G (/ p_1 p_2) (∩ ctx_1 ctx_2 ()))]
+   (side-condition (equal-contexts? ctx_1 ctx_2))
+   ---------------------------------- choice
+   (typesPeg ctx G (/ p_1 p_2) ctx_1)]
 
   ;Sequence
   [(typesPeg ctx G p_1 ctx_1)
@@ -25,19 +30,20 @@
    ---------------------------------- sequence
    (typesPeg ctx G (• p_1 p_2) ctx_2)]
 
-  ;Not
-  [(typesPeg ctx G p ctx_1)
-   ---------------------------- not
-   (typesPeg ctx G (! p) ctx_1)]
+  ;Negation
+  [(typesPeg ctx G p ctx)
+   (side-condition (it-not-is-negation p))
+   -------------------------- negation_1
+   (typesPeg ctx G (! p) ctx)]
+
+  [(typesPeg ctx_1 G p ctx_2)
+   --------------------------------- negation_2
+   (typesPeg ctx_1 G (!(! p)) ctx_2)]
 
   ;Repetition
-  [(typesPeg ctx G p ctx_1)
-   ---------------------------- repetition
-   (typesPeg ctx G (* p) ctx_1)]
-
-  ;Empty
-  [---------------------- empty
-   (typesPeg ctx G ε ctx)]
+  [(typesPeg ctx G p ctx)
+   -------------------------- repetition
+   (typesPeg ctx G (* p) ctx)]
 
   ;Constraint
   [(types ctx expr type:boolean)
@@ -46,12 +52,18 @@
 
   ;Bind
   [(side-condition (does-not-contain ctx x))
+   (typesPeg ctx G p ((x_1 type_1) ... (x type:string) (x_2 type_2) ...))
+   ---------------------------------------------------------------------------- bind_declare_1
+   (typesPeg ctx G (= x p) ((x_1 type_1) ... (x type:string) (x_2 type_2) ...))]
+  
+  [(side-condition (does-not-contain ctx x))
    (typesPeg ctx G p ((x_1 type_1) ...))
-   ----------------------------------------------------------- bind-declare
+   (side-condition (does-not-contain ((x_1 type_1) ...) x))
+   ----------------------------------------------------------- bind_declare_2
    (typesPeg ctx G (= x p) ((x_1 type_1) ... (x type:string)))]
   
   [(typesPeg ((x_1 type_1) ... (x type:string) (x_2 type_2) ...) G p ctx_1)
-   ------------------------------------------------------------------------------ bind
+   ------------------------------------------------------------------------------ bind_update
    (typesPeg ((x_1 type_1) ... (x type:string) (x_2 type_2) ...) G (= x p) ctx_1)]
 
   ;Non-terminal
@@ -126,3 +138,16 @@
        #f)]
 
   [(types-of-∀x/x∋S () () ctx_1 ctx_2) #t])
+
+
+(define-metafunction val-AttributePeg
+  equal-contexts? : ctx ctx -> boolean
+  [(equal-contexts? ((x_1 type_1) (x_2 type_2) ...) ((x_3 type_3) ... (x_1 type_1) (x_4 type_4) ...)) (equal-contexts? ((x_2 type_2) ...) ((x_3 type_3) ... (x_4 type_4) ...))]
+  [(equal-contexts? () ()) #t]
+  [(equal-contexts? ctx_1 ctx_2) #f])
+
+
+(define-metafunction val-AttributePeg
+  it-not-is-negation : p -> boolean
+  [(it-not-is-negation (! p)) #f]
+  [(it-not-is-negation p) #t])
