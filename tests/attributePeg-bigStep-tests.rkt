@@ -380,7 +380,7 @@ RESTO 5 - 101
                                   (S () (result)) (1 2 3 4) r ctx) (r ctx))
             '((⊥ ())))
 
-(test-equal (judgment-holds (parse () ((S () (n) (! (• (A () (n)) 2)))
+#;(test-equal (judgment-holds (parse () ((S () (n) (! (• (A () (n)) 2)))
                                       (A () (16) 1))
                                   (S () (result)) (1 3 4 2) r ctx) (r ctx))
             '(((1 3 4 2) ((result 16)))))

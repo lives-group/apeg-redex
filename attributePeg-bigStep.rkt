@@ -40,12 +40,17 @@
 
   ;Sequence
   [(parse ctx G p_1 s s_1 ctx_1)
-   (parse ctx_1 G p_2 s_1 r ctx_2)
-   ----------------------------------- sequence-second
-   (parse ctx G (• p_1 p_2) s r ctx_2)]
+   (parse ctx_1 G p_2 s_1 s_2 ctx_2)
+   ----------------------------------- sequence-success
+   (parse ctx G (• p_1 p_2) s s_2 ctx_2)]
 
-  [(parse ctx G p_1 s ⊥ ctx)
-   --------------------------------- sequence-fail
+  [(parse ctx G p_1 s ⊥ ctx_1)
+   --------------------------------- sequence-first-fail
+   (parse ctx G (• p_1 p_2) s ⊥ ctx)]
+
+  [(parse ctx G p_1 s s_1 ctx_1)
+   (parse ctx_1 G p_2 s_1 ⊥ ctx_2)
+   ----------------------------------- sequence-second-fail
    (parse ctx G (• p_1 p_2) s ⊥ ctx)]
 
   ;Not

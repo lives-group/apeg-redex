@@ -6,16 +6,16 @@
 
 
 (define-extended-language AttributePeg vAttributeL
-  [p ::= (x (expr ...) (x ...))
-   ((← x expr) ...)
-   (= x p)
-   (? expr)
-   (• p p)
-   (/ p p)
-   (* p)
-   (! p)
-   natural
-   ε]
+  [p ::= (x (expr ...) (x ...))	; nonterminal
+   ((← x expr) ...)	; update
+   (= x p)		; bind
+   (? expr)		; constraint
+   (• p p)		; sequence
+   (/ p p)		; priorized-choice
+   (* p)		; repetition
+   (! p)		; not
+   natural		; terminal
+   ε]			; epsilon
   [G ::= (NT ...)]
   [NT ::= (x ((type x) ...) (expr ...) p)])
 
