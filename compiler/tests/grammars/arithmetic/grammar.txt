@@ -1,0 +1,28 @@
+Expression {} {result} <-- WS {} {} Term {} {result} ('+' WS {} {} Term {} {right} {result <- result + right}
+        / '-' WS {} {} Term {} {right} {result <- result - right})*
+	;
+Term {} {result} <-- Factor {} {result} ('*' WS {} {} Factor {} {right} {result <- result * right}
+        / '/' WS {} {} Factor {} {right} {result <- result / right})*
+	;
+Factor {} {result} <-- Number {0} {result} / '(' WS {} {} Expression {} {result} ')' WS {} {}
+	;
+Number {int :: result} {result} <-- ('0' {result <- 10 * result}
+        / '1' {result <- 10 * result + 1}
+        / '2' {result <- 10 * result + 2}
+        / '3' {result <- 10 * result + 3}
+        / '4' {result <- 10 * result + 4}
+        / '5' {result <- 10 * result + 5}
+        / '6' {result <- 10 * result + 6}
+        / '7' {result <- 10 * result + 7}
+        / '8' {result <- 10 * result + 8}
+        / '9' {result <- 10 * result + 9})+ WS {} {}
+	;
+WS {} {} <-- [' ', '\n', '\r', '\t']*
+	;
+start : Expression {} {result}
+
+/*
+sample 1 - (result 36)
+sample 2 - (result 121)
+sample 3 - (result 144)
+*/

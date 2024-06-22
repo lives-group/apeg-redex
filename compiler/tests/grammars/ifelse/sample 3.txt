@@ -1,0 +1,1 @@
+let x = true in let y = ¬ x in if y then false else y ∨ x
