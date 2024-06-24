@@ -61,10 +61,10 @@
    ----------------------------------------- not
    (eval ctx (¬ expr) ,(not (term boolean)))]
 
-  [(eval ctx expr_1 integer_1)
-   (eval ctx expr_2 integer_2)
+  [(eval ctx expr_1 value_1)
+   (eval ctx expr_2 value_2)
    ------------------------------------------------------------------ equality
-   (eval ctx (== expr_1 expr_2) ,(= (term integer_1) (term integer_2)))]
+   (eval ctx (== expr_1 expr_2) ,(equal? (term value_1) (term value_2)))]
 
   [(eval ctx expr_1 integer_1)
    (eval ctx expr_2 integer_2)

@@ -55,7 +55,17 @@
 
   [(types Γ expr_1 type:integer)
    (types Γ expr_2 type:integer)
-   ----------------------------------------- equality
+   ----------------------------------------- equality_1
+   (types Γ (== expr_1 expr_2) type:boolean)]
+
+  [(types Γ expr_1 type:boolean)
+   (types Γ expr_2 type:boolean)
+   ----------------------------------------- equality_2
+   (types Γ (== expr_1 expr_2) type:boolean)]
+
+  [(types Γ expr_1 type:string)
+   (types Γ expr_2 type:string)
+   ----------------------------------------- equality_3
    (types Γ (== expr_1 expr_2) type:boolean)]
 
   [(types Γ expr_1 type:integer)
