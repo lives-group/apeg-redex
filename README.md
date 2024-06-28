@@ -1,2 +1,2 @@
-# apeg-redex
-A Redex formalization of APEG
+# attributed-peg-redex
+A Redex formalization of Attributed PEG
