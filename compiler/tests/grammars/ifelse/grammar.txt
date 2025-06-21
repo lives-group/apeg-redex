@@ -1,0 +1,38 @@
+Expression {<boolean>::enviroment}{result} <-- WS {} {} OrConditional {enviroment} {result}
+	;
+OrConditional {<boolean>::enviroment} {result} <-- AndConditional {enviroment} {result} ('∨' WS {} {} AndConditional {enviroment} {right} {result <- result || right})*
+	;
+AndConditional {<boolean>::enviroment} {result} <-- Factor {enviroment} {result} ('∧' WS {} {} Factor {enviroment} {right} {result <- result && right})*
+	;
+Factor {<boolean>::enviroment} {result} <-- '¬' WS {} {} Factor {enviroment} {result} {result <- (~ result)}
+	/ Primary {enviroment} {result}
+	;
+Primary {<boolean>::enviroment} {result} <-- Boolean {} {result}
+	/ Let {enviroment} {result}
+	/ IfElse {enviroment} {result}
+	/ VariableCall {enviroment} {result}
+	/ ParenthesesExpression {enviroment} {result}
+	;
+Boolean {} {result} <-- ("true" {result <- true} / "false" {result <- false}) WS {} {}
+	;
+Let {<boolean>::enviroment} {result} <-- "let" WS {} {} Variable {} {variable} '=' Expression {enviroment} {result} "in" Expression {put enviroment variable result} {result}
+	;
+Variable {} {variable} <-- {variable = ['a'-'z']} WS {} {}
+	;
+VariableCall {<boolean>::enviroment} {result} <-- {variable = ['a'-'z']} {result <- get enviroment variable} WS {} {}
+	;
+ParenthesesExpression {<boolean>::enviroment} {result} <-- '(' Expression {enviroment} {result} ')' WS {} {}
+	;
+IfElse {<boolean>::enviroment} {result} <-- "if" Expression {enviroment} {test} "then" Expression {enviroment} {if} "else" Expression {enviroment} {else} ({? test} {result <- if} / {? ~test} {result <- else})
+	;
+WS {} {} <-- [' ', '\n', '\r', '\t', '\b']*
+	;
+
+start : Expression {<<>>} {result}
+
+/*
+sample 1 - (result #t)
+sample 2 - (result #f)
+sample 3 - (result #t)
+sample 4 - (result #f)
+*/

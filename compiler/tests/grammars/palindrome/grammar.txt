@@ -1,0 +1,16 @@
+Initial {} {consumed} <-- !!(Size {0} {size}) {? size > 0} {consumed = Palindrome {size} {}};
+Size {int :: size} {size} <-- ['a'-'d'] Size {size + 1} {size} / ε;
+Palindrome {int :: rest} {} <-- {? rest > 1} ('a' Palindrome {rest - 2} {} 'a'
+		/ 'b' Palindrome {rest - 2} {} 'b'
+		/ 'c' Palindrome {rest - 2} {} 'c'
+		/ 'd' Palindrome {rest - 2} {} 'd')
+	/ {? rest == 1} ['a'-'d']
+	/ {? rest == 0} ε;
+start : Initial {} {consumed}
+
+/*
+sample 1 - completely consumed
+sample 2 - completely consumed
+sample 3 - completely consumed
+sample 4 - fail
+*/

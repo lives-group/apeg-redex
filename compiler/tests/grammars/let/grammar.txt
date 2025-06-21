@@ -1,0 +1,58 @@
+Expression {<int> :: enviroment} {result} <-- WS {} {} OrConditional {enviroment} {result}
+	;
+OrConditional {<int> :: enviroment} {result} <-- AndConditional {enviroment} {result} ("||" WS {} {} AndConditional {enviroment} {right} {auxiliary <- result /= 0 || right /= 0} ({? auxiliary} {result <- 1} / {? ~auxiliary} {result <- 0}))*
+	;
+AndConditional {<int> :: enviroment} {result} <-- ConditionalExpression {enviroment} {result} ("&&" WS {} {} ConditionalExpression {enviroment} {right} {result <- result * right})*
+	;
+ConditionalExpression {<int> :: enviroment} {result} <-- AdditionExpression {enviroment} {result} ("==" WS {} {} AdditionExpression {enviroment} {right} {auxiliary <- result == right} ({? auxiliary} {result <- 1} / {? ~auxiliary} {result <- 0})
+        / "!=" WS {} {} AdditionExpression {enviroment} {right} {result <- result - right}
+        / '>' WS {} {} AdditionExpression {enviroment} {right} {auxiliary <- result > right} ({? auxiliary} {result <- 1} / {? ~auxiliary} {result <- 0})
+        / ">=" WS {} {} AdditionExpression {enviroment} {right} {auxiliary <- result >= right} ({? auxiliary} {result <- 1} / {? ~auxiliary} {result <- 0})
+        / '<' WS {} {} AdditionExpression {enviroment} {right} {auxiliary <- result < right} ({? auxiliary} {result <- 1} / {? ~auxiliary} {result <- 0})
+        / "<=" WS {} {} AdditionExpression {enviroment} {right} {auxiliary <- result <= right} ({? auxiliary} {result <- 1} / {? ~auxiliary} {result <- 0}))?
+	;
+AdditionExpression {<int> :: enviroment} {result} <-- Term {enviroment} {result} ('+' WS {} {} Term {enviroment} {right} {result <- result + right}
+        / '-' WS {} {} Term {enviroment} {right} {result <- result - right})*
+	;
+Term {<int> :: enviroment} {result} <-- Factor {enviroment} {result} ('*' WS {} {} Factor {enviroment} {right} {result <- result * right}
+        / '/' WS {} {} Factor {enviroment} {right} {result <- result / right})*
+	;
+Factor {<int> :: enviroment} {result} <-- '-' WS {} {} Factor {enviroment} {result} {result <- -1 * result}
+        / '!' WS {} {} Factor {enviroment} {result} ({? result == 0} {result <- 1} / {? result /= 0} {result <- 0})
+        / Primary {enviroment} {result}
+	;
+Primary {<int> :: enviroment} {result} <-- Number {0} {result}
+        / '(' WS {} {} Expression {enviroment} {result} ')' WS {} {}
+        / Boolean {} {result}
+        / Let {enviroment} {result}
+        / VariableCall {enviroment} {result}
+	;
+Number {int :: result} {result} <-- ('0' {result <- 10 * result}
+        / '1' {result <- 10 * result + 1}
+        / '2' {result <- 10 * result + 2}
+        / '3' {result <- 10 * result + 3}
+        / '4' {result <- 10 * result + 4}
+        / '5' {result <- 10 * result + 5}
+        / '6' {result <- 10 * result + 6}
+        / '7' {result <- 10 * result + 7}
+        / '8' {result <- 10 * result + 8}
+        / '9' {result <- 10 * result + 9})+ WS {} {}
+	;
+Boolean {} {result} <-- ("true" {result <- 1} / "false" {result <- 0}) WS {} {}
+	;
+Let {<int> :: enviroment} {result} <-- "let" WS {} {} Variable {} {variable} '=' Expression {enviroment} {result} "in" {enviroment <- put enviroment variable result} Expression {enviroment} {result}
+	;
+Variable {} {variable} <-- {variable = ['a'-'z']} WS {} {}
+	;
+VariableCall {<int> :: enviroment} {result} <-- Variable {} {variable} {result <- get enviroment variable}
+	;
+WS {} {} <-- [' ', '\n', '\r', '\t']*
+	;
+
+start : Expression {<<>>} {result}
+
+/*
+sample 1 - (result 3)
+sample 2 - (result 6241)
+sample 3 - (result 1)
+*/

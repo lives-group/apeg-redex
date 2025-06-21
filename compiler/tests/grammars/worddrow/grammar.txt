@@ -1,0 +1,14 @@
+Initial {} {consumed} <-- !!Size {0} {size} {?size > 1 && size - (size / 2) * 2 == 0} {consumed = Word {size / 2} {}};
+Size {int :: size} {size} <-- ['a'-'d'] Size {size + 1} {size} / ε;
+Word {int :: counter} {} <-- {? counter > 0} ('a' Word {counter - 1} {} 'a'
+		/ 'b' Word {counter - 1} {} 'b'
+		/ 'c' Word {counter - 1} {} 'c'
+		/ 'd' Word {counter - 1} {} 'd')
+	/ ε;
+start : Initial {} {consumed}
+
+/*
+sample 1 - completely consumed
+sample 2 - fail
+sample 3 - completely consumed
+*/
